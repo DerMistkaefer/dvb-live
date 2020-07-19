@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Nullable>Enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests</RootNamespace>
+    <AssemblyName>DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests</AssemblyName>
+    <Authors>DerMistkaefer</Authors>
+    <Version>0.0.1</Version>
+    <Description>Trias Communication - Integration Tests</Description>
+    <Copyright>2020 DerMistkaefer</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/DerMistkaefer/DvbLive</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DerMistkaefer/DvbLive</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <LangVersion>8.0</LangVersion>
+    <NoWarn>CA1303;</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="coverlet.collector" Version="1.2.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TriasCommunication\TriasCommunication.csproj" />
+  </ItemGroup>
+
+</Project>

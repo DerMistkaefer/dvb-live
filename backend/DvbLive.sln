@@ -3,7 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30309.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DvbLiveBackend", "DvbLiveBackend\DvbLiveBackend.csproj", "{52C4BF61-B467-4814-BDC2-5861EB8E541C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DvbLiveBackend", "DvbLiveBackend\DvbLiveBackend.csproj", "{52C4BF61-B467-4814-BDC2-5861EB8E541C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TriasDataStructure", "TriasDataStructure\TriasDataStructure.csproj", "{D6D2C0A1-4D8B-459C-A172-3D6020A43C8B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TriasCommunication", "TriasCommunication\TriasCommunication.csproj", "{79E0D539-1CBB-42D7-AE95-74E660371F13}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TriasCommunication.IntegrationTests", "TriasCommunication.IntegrationTests\TriasCommunication.IntegrationTests.csproj", "{47C2E23D-5BBD-4C3A-9648-0AC4CB2DF110}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TriasCommunication.UnitTests", "TriasCommunication.UnitTests\TriasCommunication.UnitTests.csproj", "{82C05669-78DA-411E-AC20-36BEA9544F2B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Trias", "Trias", "{0E212EF7-710C-40FA-B6B5-4C834BFCC31B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +25,31 @@ Global
 		{52C4BF61-B467-4814-BDC2-5861EB8E541C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52C4BF61-B467-4814-BDC2-5861EB8E541C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52C4BF61-B467-4814-BDC2-5861EB8E541C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6D2C0A1-4D8B-459C-A172-3D6020A43C8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6D2C0A1-4D8B-459C-A172-3D6020A43C8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6D2C0A1-4D8B-459C-A172-3D6020A43C8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6D2C0A1-4D8B-459C-A172-3D6020A43C8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79E0D539-1CBB-42D7-AE95-74E660371F13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79E0D539-1CBB-42D7-AE95-74E660371F13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79E0D539-1CBB-42D7-AE95-74E660371F13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79E0D539-1CBB-42D7-AE95-74E660371F13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47C2E23D-5BBD-4C3A-9648-0AC4CB2DF110}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47C2E23D-5BBD-4C3A-9648-0AC4CB2DF110}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47C2E23D-5BBD-4C3A-9648-0AC4CB2DF110}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47C2E23D-5BBD-4C3A-9648-0AC4CB2DF110}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82C05669-78DA-411E-AC20-36BEA9544F2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82C05669-78DA-411E-AC20-36BEA9544F2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82C05669-78DA-411E-AC20-36BEA9544F2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82C05669-78DA-411E-AC20-36BEA9544F2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D6D2C0A1-4D8B-459C-A172-3D6020A43C8B} = {0E212EF7-710C-40FA-B6B5-4C834BFCC31B}
+		{79E0D539-1CBB-42D7-AE95-74E660371F13} = {0E212EF7-710C-40FA-B6B5-4C834BFCC31B}
+		{47C2E23D-5BBD-4C3A-9648-0AC4CB2DF110} = {0E212EF7-710C-40FA-B6B5-4C834BFCC31B}
+		{82C05669-78DA-411E-AC20-36BEA9544F2B} = {0E212EF7-710C-40FA-B6B5-4C834BFCC31B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6644BBEB-2C04-4E6F-93CE-A982A6D284F0}

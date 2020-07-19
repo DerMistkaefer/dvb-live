@@ -1,0 +1,131 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+using DerMistkaefer.DvbLive.TriasCommunication.Data;
+using DerMistkaefer.DvbLive.TriasCommunication.Exceptions;
+using vdo.trias;
+
+namespace DerMistkaefer.DvbLive.TriasCommunication
+{
+    /// <summary>
+    /// Communicator to the Trias-Api
+    /// </summary>
+    internal class TriasCommunicator : ITriasCommunicator
+    {
+        public int ApiRequestsCount { get; private set; }
+        public long DownloadedBytes { get; private set; }
+
+        private readonly HttpClient _httpClient;
+
+        public TriasCommunicator(IHttpClientFactory httpClientFactory)
+        {
+            _httpClient = httpClientFactory.CreateClient();
+            _httpClient.BaseAddress = new Uri("http://efa.vvo-online.de:8080/std3/trias");
+        }
+
+        public async Task<LocationInformationStopResponse> LocationInformationStopRequest(string idStopPoint)
+        {
+            var locationInformationRequest = new LocationInformationRequestStructure
+            {
+                Item = new LocationRefStructure() { Item = new StopPointRefStructure1 { Value = idStopPoint } },
+                Restrictions = new LocationParamStructure() { Type = new[] { LocationTypeEnumeration.stop }, IncludePtModes = true }
+            };
+
+            var response = await BaseTriasCall<LocationInformationResponseStructure>(locationInformationRequest).ConfigureAwait(false);
+
+            var locationResult = response.LocationResult?.FirstOrDefault();
+            if (response.LocationResult?.Length != 1 || locationResult == null || ((StopPointStructure)locationResult.Location.Item).StopPointRef.Value != idStopPoint)
+            {
+                var errorCodes = response.ErrorMessage?.SelectMany(x => x.Text).Select(x => x.Text) ?? new List<string>();
+                throw new LocationInformationException($"No location could be found. {string.Join('-', errorCodes)}");
+            }
+
+            var stopPoint = (StopPointStructure) locationResult.Location.Item;
+
+            return new LocationInformationStopResponse()
+            {
+                IdStopPoint = stopPoint.StopPointRef.Value,
+                StopPointName = stopPoint.StopPointName.FirstOrDefault(x => x.Language == "de")?.Text ?? "???",
+                Latitude = decimal.ToDouble(locationResult.Location.GeoPosition.Latitude),
+                Longitude = decimal.ToDouble(locationResult.Location.GeoPosition.Longitude)
+            };
+        }
+
+        public async Task TripRequest()
+        {
+            var tripRequest = new TripRequestStructure()
+            {
+                
+            };
+
+            var response = await BaseTriasCall<TripResponseStructure>(tripRequest).ConfigureAwait(false);
+        }
+
+        public async Task StopEventRequest(string idStopPoint)
+        {
+            var stopEventRequest = new StopEventRequestStructure
+            {
+                Location = new LocationContextStructure()
+                {
+                    Item = new LocationRefStructure { Item = new StopPointRefStructure1() { Value = idStopPoint } },
+                },
+                Params = new StopEventParamStructure()
+                {
+                    PtModeFilter = new PtModeFilterStructure() { Exclude = false, PtMode = new [] { PtModesEnumeration.tram }},
+                    StopEventType = StopEventTypeEnumeration.both,
+                    IncludePreviousCalls = true,
+                    IncludeOnwardCalls = true,
+                    IncludeRealtimeData = true,
+                }
+            };
+
+            var response = await BaseTriasCall<StopEventResponseStructure>(stopEventRequest).ConfigureAwait(false);
+        }
+
+        private async Task<TType> BaseTriasCall<TType>(object requestPayload)
+        {
+            ApiRequestsCount++;
+            var serviceRequest = new ServiceRequestStructure1
+            {
+                RequestTimestamp = System.DateTime.Now,
+                RequestorRef = new ParticipantRefStructure() { Value = "OpenService" },
+                RequestPayload = new RequestPayloadStructure() { Item = requestPayload }
+            };
+            var trias = new Trias { Item = serviceRequest };
+            var text = XmlSerialisation(trias);
+
+            using var content = new StringContent(text, Encoding.UTF8, "text/xml");
+            var response = await _httpClient.PostAsync("", content).ConfigureAwait(false);
+            DownloadedBytes += response.Content.Headers.ContentLength ?? 0;
+            response.EnsureSuccessStatusCode();
+
+            await using var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            var responseTrias = XmlDeserialisation<Trias>(responseStream);
+            var serviceDelievery = (ServiceDeliveryStructure1) responseTrias.Item;
+            DeliveryPayloadStructure delevieryPayload = serviceDelievery.DeliveryPayload;
+
+            return (TType) delevieryPayload.Item;
+        }
+
+        private static string XmlSerialisation(object data)
+        {
+            var xmlSerializer = new XmlSerializer(data.GetType());
+            using StringWriter textWriter = new StringWriter();
+            xmlSerializer.Serialize(textWriter, data);
+
+            return textWriter.ToString();
+        }
+
+        private static TType XmlDeserialisation<TType>(Stream data)
+        {
+            var xmlSerializer = new XmlSerializer(typeof(TType));
+
+            return (TType) xmlSerializer.Deserialize(data);
+        }
+    }
+}

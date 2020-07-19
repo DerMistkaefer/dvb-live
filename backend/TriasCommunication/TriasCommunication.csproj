@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>Enable</Nullable>
+    <RootNamespace>DerMistkaefer.DvbLive.TriasCommunication</RootNamespace>
+    <AssemblyName>DerMistkaefer.DvbLive.TriasCommunication</AssemblyName>
+    <Authors>DerMistkaefer</Authors>
+    <Version>0.0.1</Version>
+    <Description>Trias Communication</Description>
+    <Copyright>2020 DerMistkaefer</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/DerMistkaefer/DvbLive</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DerMistkaefer/DvbLive</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <LangVersion>8.0</LangVersion>
+    <NoWarn>CA1303;</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.6" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TriasDataStructure\TriasDataStructure.csproj" />
+  </ItemGroup>
+
+</Project>
