@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -28,6 +30,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             _httpClient.BaseAddress = new Uri("http://efa.vvo-online.de:8080/std3/trias");
         }
 
+        /// <inheritdoc cref="ITriasCommunicator" />
         public async Task<LocationInformationStopResponse> LocationInformationStopRequest(string idStopPoint)
         {
             var locationInformationRequest = new LocationInformationRequestStructure
@@ -66,13 +69,15 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             var response = await BaseTriasCall<TripResponseStructure>(tripRequest).ConfigureAwait(false);
         }
 
-        public async Task StopEventRequest(string idStopPoint)
+        /// <inheritdoc cref="ITriasCommunicator" />
+        public async Task<StopEventResponse> StopEventRequest(string idStopPoint)
         {
             var stopEventRequest = new StopEventRequestStructure
             {
                 Location = new LocationContextStructure()
                 {
                     Item = new LocationRefStructure { Item = new StopPointRefStructure1() { Value = idStopPoint } },
+                    DepArrTime = System.DateTime.Now
                 },
                 Params = new StopEventParamStructure()
                 {
@@ -85,6 +90,14 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             };
 
             var response = await BaseTriasCall<StopEventResponseStructure>(stopEventRequest).ConfigureAwait(false);
+
+            if (response.ErrorMessage?.Length > 0)
+            {
+                var errorCodes = response.ErrorMessage?.SelectMany(x => x.Text).Select(x => x.Text) ?? new List<string>();
+                throw new StopEventException($"No stop events could be collected. {string.Join('-', errorCodes)}");
+            }
+
+            return new StopEventResponse(response, idStopPoint);
         }
 
         private async Task<TType> BaseTriasCall<TType>(object requestPayload)
@@ -101,10 +114,10 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
 
             using var content = new StringContent(text, Encoding.UTF8, "text/xml");
             var response = await _httpClient.PostAsync("", content).ConfigureAwait(false);
-            DownloadedBytes += response.Content.Headers.ContentLength ?? 0;
+            DownloadedBytes += response.Content?.Headers?.ContentLength ?? 0;
             response.EnsureSuccessStatusCode();
 
-            await using var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            await using var responseStream = await response.Content!.ReadAsStreamAsync().ConfigureAwait(false);
             var responseTrias = XmlDeserialisation<Trias>(responseStream);
             var serviceDelievery = (ServiceDeliveryStructure1) responseTrias.Item;
             DeliveryPayloadStructure delevieryPayload = serviceDelievery.DeliveryPayload;

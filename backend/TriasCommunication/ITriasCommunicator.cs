@@ -24,5 +24,12 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         /// <param name="idStopPoint">StopPoint to get information</param>
         /// <returns>Location Information for the StopPoint</returns>
         Task<LocationInformationStopResponse> LocationInformationStopRequest(string idStopPoint);
+
+        /// <summary>
+        /// Get StopEvents on an stop point
+        /// </summary>
+        /// <param name="idStopPoint">StopPoint to get stop events</param>
+        /// <returns>Stop Events for the Stop Point</returns>
+        Task<StopEventResponse> StopEventRequest(string idStopPoint);
     }
 }

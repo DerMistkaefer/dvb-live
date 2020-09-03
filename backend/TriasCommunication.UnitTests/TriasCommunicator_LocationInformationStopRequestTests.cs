@@ -12,9 +12,9 @@ using Xunit;
 namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
 {
     /// <summary>
-    /// Tests for the Trias Communicator
+    /// Tests for the Trias Communicator - Function LocationInformationStopRequest
     /// </summary>
-    public sealed class TriasCommunicatorTests : IDisposable
+    public sealed class TriasCommunicator_LocationInformationStopRequestTests : IDisposable
     {
         private readonly MockHttpMessageHandler _mockHttpMessageHandler;
         private readonly TriasCommunicator _communicator;
@@ -22,7 +22,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
         /// <summary>
         /// Initalize the Trias Communicator
         /// </summary>
-        public TriasCommunicatorTests()
+        public TriasCommunicator_LocationInformationStopRequestTests()
         {
             var mockHttpClientFactory = new Mock<IHttpClientFactory>();
             _mockHttpMessageHandler = new MockHttpMessageHandler();
@@ -269,17 +269,5 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
             Func<Task> act = async () => { await _communicator.LocationInformationStopRequest("de:14612:28").ConfigureAwait(false); };
             await act.Should().ThrowAsync<LocationInformationException>().ConfigureAwait(false);
         }
-
-        //[Fact]
-        //public async Task TripRequest()
-        //{
-        //    await communicator.TripRequest().ConfigureAwait(false);
-        //}
-
-        //[Fact]
-        //public async Task StopEventRequest_DresdenMainStation()
-        //{
-        //    await communicator.StopEventRequest("de:14612:28").ConfigureAwait(false);
-        //}
     }
 }
