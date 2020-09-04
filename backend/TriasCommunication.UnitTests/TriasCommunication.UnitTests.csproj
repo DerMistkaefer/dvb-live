@@ -44,6 +44,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TriasCommunication\TriasCommunication.csproj" />
+    <ProjectReference Include="..\TriasDataStructure\TriasDataStructure.csproj" />
   </ItemGroup>
 
 </Project>
