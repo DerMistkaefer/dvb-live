@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DerMistkaefer.DvbLive.TriasCommunication.Data
+﻿namespace DerMistkaefer.DvbLive.TriasCommunication.Data
 {
     /// <summary>
     /// Response Structure for an Location Information Stop Request
@@ -22,11 +18,11 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Data
         /// <summary>
         /// Longtitude
         /// </summary>
-        public double Longitude { get; set; }
+        public decimal Longitude { get; set; }
 
         /// <summary>
         /// Geo Latitude of the Stop
         /// </summary>
-        public double Latitude { get; set; }
+        public decimal Latitude { get; set; }
     }
 }

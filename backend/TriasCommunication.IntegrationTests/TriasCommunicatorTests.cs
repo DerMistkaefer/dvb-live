@@ -1,9 +1,8 @@
-using System.Net;
-using System.Net.Http;
 using DerMistkaefer.DvbLive.TriasCommunication.Data;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests
@@ -32,8 +31,8 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests
             {
                 IdStopPoint = "de:14612:28",
                 StopPointName = "Dresden, Hauptbahnhof",
-                Longitude = 13.73293,
-                Latitude = 51.03993
+                Longitude = 13.73293M,
+                Latitude = 51.03993M
             };
             response.Should().BeEquivalentTo(shouldResponse);
         }

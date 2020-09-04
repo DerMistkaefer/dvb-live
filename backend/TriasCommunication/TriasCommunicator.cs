@@ -1,15 +1,13 @@
-﻿using System;
+﻿using DerMistkaefer.DvbLive.TriasCommunication.Data;
+using DerMistkaefer.DvbLive.TriasCommunication.Exceptions;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using DerMistkaefer.DvbLive.TriasCommunication.Data;
-using DerMistkaefer.DvbLive.TriasCommunication.Exceptions;
 using vdo.trias;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication
@@ -48,14 +46,14 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
                 throw new LocationInformationException($"No location could be found. {string.Join('-', errorCodes)}");
             }
 
-            var stopPoint = (StopPointStructure) locationResult.Location.Item;
+            var stopPoint = (StopPointStructure)locationResult.Location.Item;
 
             return new LocationInformationStopResponse()
             {
                 IdStopPoint = stopPoint.StopPointRef.Value,
                 StopPointName = stopPoint.StopPointName.FirstOrDefault(x => x.Language == "de")?.Text ?? "???",
-                Latitude = decimal.ToDouble(locationResult.Location.GeoPosition.Latitude),
-                Longitude = decimal.ToDouble(locationResult.Location.GeoPosition.Longitude)
+                Latitude = locationResult.Location.GeoPosition.Latitude,
+                Longitude = locationResult.Location.GeoPosition.Longitude
             };
         }
 
@@ -63,7 +61,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         {
             var tripRequest = new TripRequestStructure()
             {
-                
+
             };
 
             var response = await BaseTriasCall<TripResponseStructure>(tripRequest).ConfigureAwait(false);
@@ -81,7 +79,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
                 },
                 Params = new StopEventParamStructure()
                 {
-                    PtModeFilter = new PtModeFilterStructure() { Exclude = false, PtMode = new [] { PtModesEnumeration.tram }},
+                    PtModeFilter = new PtModeFilterStructure() { Exclude = false, PtMode = new[] { PtModesEnumeration.tram } },
                     StopEventType = StopEventTypeEnumeration.both,
                     IncludePreviousCalls = true,
                     IncludeOnwardCalls = true,
@@ -119,10 +117,10 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
 
             await using var responseStream = await response.Content!.ReadAsStreamAsync().ConfigureAwait(false);
             var responseTrias = XmlDeserialisation<Trias>(responseStream);
-            var serviceDelievery = (ServiceDeliveryStructure1) responseTrias.Item;
+            var serviceDelievery = (ServiceDeliveryStructure1)responseTrias.Item;
             DeliveryPayloadStructure delevieryPayload = serviceDelievery.DeliveryPayload;
 
-            return (TType) delevieryPayload.Item;
+            return (TType)delevieryPayload.Item;
         }
 
         private static string XmlSerialisation(object data)
@@ -138,7 +136,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         {
             var xmlSerializer = new XmlSerializer(typeof(TType));
 
-            return (TType) xmlSerializer.Deserialize(data);
+            return (TType)xmlSerializer.Deserialize(data);
         }
     }
 }
