@@ -1,13 +1,12 @@
 ﻿using DerMistkaefer.DvbLive.TriasCommunication.Data;
-using DerMistkaefer.DvbLive.TriasCommunication.Exceptions;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using RichardSzalay.MockHttp;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 using DateTime = System.DateTime;
 
@@ -254,8 +253,10 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
 
             _mockHttpMessageHandler.When("*").Respond("text/xml", respondBody);
 
-            Func<Task> act = async () => { await _communicator.StopEventRequest("de:14612:281456").ConfigureAwait(false); };
-            await act.Should().ThrowAsync<StopEventException>().ConfigureAwait(false);
+            var response = await _communicator.StopEventRequest("de:14612:281456").ConfigureAwait(false);
+
+            var shouldResponse = new StopEventResponse("de:14612:281456", new List<StopEventResult>());
+            response.Should().BeEquivalentTo(shouldResponse);
         }
 
         [Fact]
