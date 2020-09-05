@@ -1,6 +1,7 @@
 using DerMistkaefer.DvbLive.TriasCommunication.Data;
 using DerMistkaefer.DvbLive.TriasCommunication.Exceptions;
 using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using RichardSzalay.MockHttp;
 using System;
@@ -27,7 +28,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
             _mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(_mockHttpMessageHandler.ToHttpClient());
 
-            _communicator = new TriasCommunicator(mockHttpClientFactory.Object);
+            _communicator = new TriasCommunicator(mockHttpClientFactory.Object, NullLogger<TriasCommunicator>.Instance);
         }
 
         public void Dispose()

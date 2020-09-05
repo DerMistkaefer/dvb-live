@@ -1,5 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>DerMistkaefer.DvbLive.Backend</RootNamespace>
@@ -9,8 +9,9 @@
     <Description>Backend for the DVB (Dresdner Verkehrsbetriebe) Public Transport Live Map System.</Description>
     <Copyright>2020 DerMistkaefer</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
+    <UserSecretsId>02879fa8-9113-49c2-8fcf-272767df67a4</UserSecretsId>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/DerMistkaefer/DvbLive</PackageProjectUrl>
     <RepositoryUrl>https://github.com/DerMistkaefer/DvbLive</RepositoryUrl>
@@ -24,10 +25,16 @@
   <PropertyGroup>
     <Nullable>Enable</Nullable>
     <LangVersion>8.0</LangVersion>
-    <NoWarn>CA1303;</NoWarn>
+    <NoWarn>CA1303;CA1031;CA1812;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -37,5 +44,4 @@
   <ItemGroup>
     <ProjectReference Include="..\TriasCommunication\TriasCommunication.csproj" />
   </ItemGroup>
-
 </Project>

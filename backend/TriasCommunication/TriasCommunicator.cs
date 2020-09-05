@@ -1,5 +1,6 @@
 ﻿using DerMistkaefer.DvbLive.TriasCommunication.Data;
 using DerMistkaefer.DvbLive.TriasCommunication.Exceptions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,10 +21,12 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         public int ApiRequestsCount { get; private set; }
         public long DownloadedBytes { get; private set; }
 
+        private readonly ILogger<TriasCommunicator> _logger;
         private readonly HttpClient _httpClient;
 
-        public TriasCommunicator(IHttpClientFactory httpClientFactory)
+        public TriasCommunicator(IHttpClientFactory httpClientFactory, ILogger<TriasCommunicator> logger)
         {
+            _logger = logger;
             _httpClient = httpClientFactory.CreateClient();
             _httpClient.BaseAddress = new Uri("http://efa.vvo-online.de:8080/std3/trias");
         }
@@ -79,7 +82,6 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
                 },
                 Params = new StopEventParamStructure()
                 {
-                    PtModeFilter = new PtModeFilterStructure() { Exclude = false, PtMode = new[] { PtModesEnumeration.tram } },
                     StopEventType = StopEventTypeEnumeration.both,
                     IncludePreviousCalls = true,
                     IncludeOnwardCalls = true,
@@ -92,7 +94,12 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             if (response.ErrorMessage?.Length > 0)
             {
                 var errorCodes = response.ErrorMessage?.SelectMany(x => x.Text).Select(x => x.Text) ?? new List<string>();
-                throw new StopEventException($"No stop events could be collected. {string.Join('-', errorCodes)}");
+                var ex = new StopEventException($"No stop events could be collected. {string.Join('-', errorCodes)}");
+                using (_logger.BeginScope(new Dictionary<string, object> { { "idStopPoint", idStopPoint }, { "response", response } }))
+                {
+                    _logger.LogError(ex, "{idStopPoint} - No stop events could be collected.", idStopPoint);
+                }
+                return new StopEventResponse(idStopPoint, new List<StopEventResult>());
             }
 
             return new StopEventResponse(response, idStopPoint);

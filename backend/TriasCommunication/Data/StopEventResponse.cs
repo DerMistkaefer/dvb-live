@@ -92,7 +92,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Data
 
         internal StopEventResult(DateTime operatingDayRef, string journeyRef, string lineRef, string modeName,
             string lineName, string operatorRef, string routeDescription,
-            string originStopPointRef, string destinationStopPointRef, 
+            string originStopPointRef, string destinationStopPointRef,
             IReadOnlyList<StopEventCall> stops)
         {
             OperatingDayRef = operatingDayRef;
@@ -111,19 +111,21 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Data
         {
             var stopEvent = stopEventResult.StopEvent;
             var stops = new List<StopEventCall>();
-            stops.AddRange(stopEvent.PreviousCall.Select(call => new StopEventCall(call, CallType.Previous)));
+            if (stopEvent.PreviousCall != null)
+                stops.AddRange(stopEvent.PreviousCall.Select(call => new StopEventCall(call, CallType.Previous)));
             stops.Add(new StopEventCall(stopEvent.ThisCall, CallType.This));
-            stops.AddRange(stopEvent.OnwardCall.Select(call => new StopEventCall(call, CallType.Onward)));
+            if (stopEvent.OnwardCall != null)
+                stops.AddRange(stopEvent.OnwardCall.Select(call => new StopEventCall(call, CallType.Onward)));
             Stops = stops;
 
             OperatingDayRef = stopEvent.Service.OperatingDayRef.Value != null ? Convert.ToDateTime(stopEvent.Service.OperatingDayRef.Value.Replace("T", "", StringComparison.CurrentCultureIgnoreCase), CultureInfo.InvariantCulture) : DateTime.Today;
             JourneyRef = stopEvent.Service.JourneyRef.Value;
             var serviceSection = stopEvent.Service.ServiceSection.First();
             LineRef = serviceSection.LineRef.Value;
-            ModeName = serviceSection.Mode.Name.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
-            LineName = serviceSection.PublishedLineName.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
+            ModeName = serviceSection.Mode.Name?.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
+            LineName = serviceSection.PublishedLineName?.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
             OperatorRef = serviceSection.OperatorRef.Value;
-            RouteDescription = serviceSection.RouteDescription.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
+            RouteDescription = serviceSection.RouteDescription?.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
             OriginStopPointRef = stopEvent.Service.OriginStopPointRef.Value;
             DestinationStopPointRef = stopEvent.Service.DestinationStopPointRef.Value;
         }
@@ -179,7 +181,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Data
         /// </summary>
         public CallType Type { get; }
 
-        internal StopEventCall(string stopPointRef, string stopPointName, int stopSeqNumber, string plannedBay, 
+        internal StopEventCall(string stopPointRef, string stopPointName, int stopSeqNumber, string plannedBay,
             DateTime? arrivalTimeTableTime, DateTime? arrivalEstimatedTime, DateTime? departureTimeTableTime, DateTime? departureEstimatedTime,
             CallType callType)
         {
@@ -199,8 +201,8 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Data
             var callStop = call.CallAtStop;
             StopPointRef = callStop.StopPointRef.Value;
             StopSeqNumber = Convert.ToInt32(callStop.StopSeqNumber, CultureInfo.CurrentCulture);
-            StopPointName = callStop.StopPointName.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
-            PlannedBay = callStop.PlannedBay.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
+            StopPointName = callStop.StopPointName?.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
+            PlannedBay = callStop.PlannedBay?.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
             ArrivalTimeTableTime = DateTimeIsDefaultThenNull(callStop.ServiceArrival?.TimetabledTime);
             ArrivalEstimatedTime = DateTimeIsDefaultThenNull(callStop.ServiceArrival?.EstimatedTime);
             DepartureTimeTableTime = DateTimeIsDefaultThenNull(callStop.ServiceDeparture?.TimetabledTime);

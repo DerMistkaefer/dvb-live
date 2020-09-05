@@ -1,6 +1,7 @@
 using DerMistkaefer.DvbLive.TriasCommunication.Data;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -19,7 +20,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests
         /// </summary>
         public TriasCommunicatorTests()
         {
-            _communicator = new TriasCommunicator(DefaultHttpClientFactory());
+            _communicator = new TriasCommunicator(DefaultHttpClientFactory(), NullLogger<TriasCommunicator>.Instance);
         }
 
         [Fact]
