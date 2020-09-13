@@ -17,9 +17,17 @@ updates:
     directory: "/frontend"
     schedule:
       interval: "daily"
+    labels:
+     - "dependencies"
+     - "javascript"
+     - "automerge"
 
   # Maintain backend dependencies for nuget
   - package-ecosystem: "nuget"
     directory: "/backend"
     schedule:
       interval: "daily"
+    labels:
+     - "dependencies"
+     - ".NET"
+     - "automerge"
