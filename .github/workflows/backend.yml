@@ -22,4 +22,4 @@ jobs:
     - name: Build
       run: dotnet build "backend/DvbLive.sln" --configuration Release --no-restore
     - name: Test
-      run: dotnet test "backend/DvbLive.sln" --no-restore --verbosity normal
+      run: dotnet test "backend/DvbLive.sln" --no-restore --no-build --verbosity normal
