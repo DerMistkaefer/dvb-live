@@ -12,7 +12,7 @@ Trias 1.2 - https://www.vdv.de/431-2-sdsv1.2.pdfx
 ## OpenData Germany Saxony
 https://register.opendata.sachsen.de/catalog/471/datasets/13
 
-## VDV Trias Infos
+## VVO Trias Infos
 
 ```
 # Wichtige Hinweise zur Nutzung der API zur Fahrplanauskunft
@@ -33,9 +33,13 @@ Die TRIAS-Dienste benötigen die RequestorRef „OpenService“. Wenn Sie eine A
 3. Die Services sind auf normale Last ausgelegt. Bei missbräuchlicher Nutzung durch automatisierte Massenanfragen o. ä. behalten wir uns die Sperrung der Dienste vor. 
 ```
 
+Trias Implementation Dokumentation: https://www.dresden.de/media/pdf/wirtschaft/VVO_Beschreibung_der_Schnittstelle_API_fuer_die_Verbindungsauskunft.pdf
+
 ## Examples
 
 Trias Url: http://efa.vvo-online.de:8080/std3/trias - Trias 1.2 (as of 18.07.2020)
+
+Method: Post
 
 Content-Type: text/xml
 
