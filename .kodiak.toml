@@ -5,3 +5,8 @@ version = 1
 [update]
 always = true # default: false
 require_automerge_label = true # default: true
+
+[merge]
+automerge_label = "automerge" # default: "automerge"
+require_automerge_label = true
+method = "squash" # default: first valid merge method in list "merge", "squash", "rebase", options: "merge", "squash", "rebase"
