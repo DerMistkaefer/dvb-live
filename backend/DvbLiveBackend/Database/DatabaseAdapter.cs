@@ -29,10 +29,8 @@ namespace DerMistkaefer.DvbLive.Backend.Database
             await context.SaveChangesAsync().ConfigureAwait(false);
         });
 
-        public Task<List<StopPoints>> GetAllStopPoints() => DbOperation(async context =>
-        {
-            return await context.StopPoints.ToListAsync().ConfigureAwait(false);
-        });
+        public Task<List<StopPoints>> GetAllStopPoints()
+            => DbOperation(context => context.StopPoints.ToListAsync());
 
         private async Task DbOperation(Func<DvbDbContext, Task> databaseOperation)
         {

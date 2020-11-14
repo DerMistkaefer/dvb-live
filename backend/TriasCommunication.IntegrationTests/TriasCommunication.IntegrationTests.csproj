@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Nullable>Enable</Nullable>
     <IsPackable>false</IsPackable>
     <RootNamespace>DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests</RootNamespace>
@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <NoWarn>CA1303;</NoWarn>
   </PropertyGroup>
 

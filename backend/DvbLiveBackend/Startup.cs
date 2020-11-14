@@ -31,7 +31,8 @@ namespace DerMistkaefer.DvbLive.Backend
             services.AddEntityFrameworkMySql()
                 .AddDbContext<DvbDbContext>((serviceProvider, options) =>
                 {
-                    options.UseMySql(Configuration.GetConnectionString("DvbDatabase"));
+                    var conString = Configuration.GetConnectionString("DvbDatabase");
+                    options.UseMySql(conString, ServerVersion.AutoDetect(conString));
                     options.UseInternalServiceProvider(serviceProvider);
                 });
             services.AddSingleton<ICacheAdapter, CacheAdapter>();
