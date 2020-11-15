@@ -81,12 +81,12 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
         {
             if (_cacheAdapter.NeedStopPointCached(triasIdStopPoint))
             {
-                _logger.LogDebug("{function} - {triasIdStopPoint}", nameof(CollectStopPoint), triasIdStopPoint);
+                //_logger.LogDebug("{function} - {triasIdStopPoint}", nameof(CollectStopPoint), triasIdStopPoint);
 
                 var data = await _triasCommunicator.LocationInformationStopRequest(triasIdStopPoint).ConfigureAwait(false);
                 await _cacheAdapter.CacheStopPoint(data).ConfigureAwait(false);
 
-                _logger.LogDebug("{function} - {triasIdStopPoint} - {name} ✔", nameof(CollectStopPoint), triasIdStopPoint, data.StopPointName);
+                //_logger.LogDebug("{function} - {triasIdStopPoint} - {name} ✔", nameof(CollectStopPoint), triasIdStopPoint, data.StopPointName);
             }
         }
 
@@ -96,11 +96,14 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
             var queryStopPoints = GetQueryStopPointsObserve();
             while (queryStopPoints.Count != 0)
             {
-                Parallel.ForEach(queryStopPoints, fahrtIdStop =>
+                var tasks = new List<Task>();
+                foreach (var fahrtIdStop in queryStopPoints)
                 {
-                    ObserveTripsFromStopPoint(key, fahrtIdStop).Wait();
+                    tasks.Add(ObserveTripsFromStopPoint(key, fahrtIdStop));
                     key++;
-                });
+                }
+                Task.WhenAll(tasks).Wait();
+
                 queryStopPoints = GetQueryStopPointsObserve();
             }
         }
@@ -115,14 +118,14 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
 
         private async Task ObserveTripsFromStopPoint(int key, string triasIdStopPoint)
         {
-            _logger.LogDebug("#############################################");
-            _logger.LogDebug("#############################################");
-            _logger.LogDebug("Next Stop: {key} - {triasIdStopPoint}", key, triasIdStopPoint);
-            _logger.LogDebug("Next Stop: {key} - {triasIdStopPoint}", key, triasIdStopPoint);
-            _logger.LogDebug("Next Stop: {key} - {triasIdStopPoint}", key, triasIdStopPoint);
-            _logger.LogDebug("#############################################");
-            _logger.LogDebug("#############################################");
-            PrintTriasCommunicatorUssage(1);
+            //_logger.LogDebug("#############################################");
+            //_logger.LogDebug("#############################################");
+            //_logger.LogDebug("Next Stop: {key} - {triasIdStopPoint}", key, triasIdStopPoint);
+            //_logger.LogDebug("Next Stop: {key} - {triasIdStopPoint}", key, triasIdStopPoint);
+            //_logger.LogDebug("Next Stop: {key} - {triasIdStopPoint}", key, triasIdStopPoint);
+            //_logger.LogDebug("#############################################");
+            //_logger.LogDebug("#############################################");
+            //PrintTriasCommunicatorUssage(1);
 
             var data = await _triasCommunicator.StopEventRequest(triasIdStopPoint).ConfigureAwait(false);
 
@@ -132,10 +135,10 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
 
         private async Task CollectStopEvent(string triasIdStopPoint, StopEventResult stopEvent)
         {
-            _logger.LogDebug("{function} - {triasIdStopPoint} - {journey}", nameof(CollectStopEvent), triasIdStopPoint, stopEvent.JourneyRef);
+            //_logger.LogDebug("{function} - {triasIdStopPoint} - {journey}", nameof(CollectStopEvent), triasIdStopPoint, stopEvent.JourneyRef);
             if (stopEvent.OperatorRef != "voe:16") // IF Operator == DVB
             {
-                _logger.LogDebug("{function} - {triasIdStopPoint} - {journey} ❌ - Operator not DVB", nameof(CollectStopEvent), triasIdStopPoint, stopEvent.JourneyRef);
+                //_logger.LogDebug("{function} - {triasIdStopPoint} - {journey} ❌ - Operator not DVB", nameof(CollectStopEvent), triasIdStopPoint, stopEvent.JourneyRef);
                 return;
             }
 
@@ -164,7 +167,7 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
                 }
             }
 
-            _logger.LogDebug("{function} - {triasIdStopPoint} - {journey} ✔", nameof(CollectStopEvent), triasIdStopPoint, stopEvent.JourneyRef);
+            //_logger.LogDebug("{function} - {triasIdStopPoint} - {journey} ✔", nameof(CollectStopEvent), triasIdStopPoint, stopEvent.JourneyRef);
         }
 
         private async Task CollectTripStopPoints(CachedTrip cachedTrip)

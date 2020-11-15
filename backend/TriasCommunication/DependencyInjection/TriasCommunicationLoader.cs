@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Http;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication.DependencyInjection
 {
@@ -16,6 +18,8 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.DependencyInjection
         {
             services.AddHttpClient();
             services.AddSingleton<ITriasCommunicator, TriasCommunicator>();
+            // Disable Logging for HttpClient.
+            services.RemoveAll<IHttpMessageHandlerBuilderFilter>();
         }
     }
 }

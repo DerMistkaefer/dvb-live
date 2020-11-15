@@ -82,6 +82,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
                 },
                 Params = new StopEventParamStructure()
                 {
+                    TimeWindow = "5", // Include next 5 minutes of stops.
                     StopEventType = StopEventTypeEnumeration.both,
                     IncludePreviousCalls = true,
                     IncludeOnwardCalls = true,
@@ -91,18 +92,20 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
 
             var response = await BaseTriasCall<StopEventResponseStructure>(stopEventRequest).ConfigureAwait(false);
 
-            if (response.ErrorMessage?.Length > 0)
-            {
-                var errorCodes = response.ErrorMessage?.SelectMany(x => x.Text).Select(x => x.Text) ?? new List<string>();
-                var ex = new StopEventException($"No stop events could be collected. {string.Join('-', errorCodes)}");
-                using (_logger.BeginScope(new Dictionary<string, object> { { "idStopPoint", idStopPoint }, { "response", response } }))
-                {
-                    _logger.LogError(ex, "{idStopPoint} - No stop events could be collected.", idStopPoint);
-                }
-                return new StopEventResponse(idStopPoint, new List<StopEventResult>());
-            }
+            if (!(response.ErrorMessage?.Length > 0))
+                return new StopEventResponse(response, idStopPoint);
 
-            return new StopEventResponse(response, idStopPoint);
+            if (response.ErrorMessage.First().Code == "-4030") // STOPEVENT_LOCATIONUNSERVED - Normal because not every stop point has trips in the next 5 minutes.
+                return new StopEventResponse(idStopPoint, new List<StopEventResult>());
+
+            var errorCodes = response.ErrorMessage?.SelectMany(x => x.Text).Select(x => x.Text) ?? new List<string>();
+            var ex = new StopEventException($"No stop events could be collected. {string.Join('-', errorCodes)}");
+            using (_logger.BeginScope(new Dictionary<string, object> { { "idStopPoint", idStopPoint }, { "response", response } }))
+            {
+                _logger.LogError(ex, "{idStopPoint} - No stop events could be collected.", idStopPoint);
+            }
+            return new StopEventResponse(idStopPoint, new List<StopEventResult>());
+
         }
 
         private async Task<TType> BaseTriasCall<TType>(object requestPayload)
