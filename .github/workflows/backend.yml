@@ -7,10 +7,23 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  backend-ubuntu:
     runs-on: ubuntu-latest
-
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: '5.0.x'
+    - name: Install dependencies
+      run: dotnet restore "backend/DvbLive.sln"
+    - name: Build
+      run: dotnet build "backend/DvbLive.sln" --configuration Release --no-restore
+    - name: Test
+      run: dotnet test "backend/DvbLive.sln" --configuration Release --collect "Code Coverage" --no-build
+      
+  backend-windows:
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
