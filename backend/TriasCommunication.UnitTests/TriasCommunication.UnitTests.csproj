@@ -25,7 +25,7 @@
 
   <PropertyGroup>
     <LangVersion>9.0</LangVersion>
-    <NoWarn>CA1303;</NoWarn>
+    <NoWarn>CA1303;CA1707;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

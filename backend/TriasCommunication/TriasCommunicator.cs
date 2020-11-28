@@ -1,35 +1,32 @@
 ﻿using DerMistkaefer.DvbLive.TriasCommunication.Data;
 using DerMistkaefer.DvbLive.TriasCommunication.Exceptions;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using vdo.trias;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication
 {
     /// <summary>
-    /// Communicator to the Trias-Api
+    /// Communicator to the Trias-Api.
     /// </summary>
     internal class TriasCommunicator : ITriasCommunicator
     {
-        public int ApiRequestsCount { get; private set; }
-        public long DownloadedBytes { get; private set; }
-
+        private readonly ITriasHttpClient _triasHttpClient;
         private readonly ILogger<TriasCommunicator> _logger;
-        private readonly HttpClient _httpClient;
 
-        public TriasCommunicator(IHttpClientFactory httpClientFactory, ILogger<TriasCommunicator> logger)
+        public TriasCommunicator(ITriasHttpClient triasHttpClient, ILogger<TriasCommunicator> logger)
         {
+            _triasHttpClient = triasHttpClient;
             _logger = logger;
-            _httpClient = httpClientFactory.CreateClient();
-            _httpClient.BaseAddress = new Uri("http://efa.vvo-online.de:8080/std3/trias");
         }
+
+        /// <inheritdoc cref="ITriasCommunicator"/>
+        public int ApiRequestsCount => _triasHttpClient.ApiRequestsCount;
+
+        /// <inheritdoc cref="ITriasCommunicator"/>
+        public long DownloadedBytes => _triasHttpClient.DownloadedBytes;
 
         /// <inheritdoc cref="ITriasCommunicator" />
         public async Task<LocationInformationStopResponse> LocationInformationStopRequest(string idStopPoint)
@@ -40,7 +37,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
                 Restrictions = new LocationParamStructure() { Type = new[] { LocationTypeEnumeration.stop }, IncludePtModes = true }
             };
 
-            var response = await BaseTriasCall<LocationInformationResponseStructure>(locationInformationRequest).ConfigureAwait(false);
+            var response = await _triasHttpClient.BaseTriasCall<LocationInformationResponseStructure>(locationInformationRequest).ConfigureAwait(false);
 
             var locationResult = response.LocationResult?.FirstOrDefault();
             if (response.LocationResult?.Length != 1 || locationResult == null || ((StopPointStructure)locationResult.Location.Item).StopPointRef.Value != idStopPoint)
@@ -67,7 +64,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
 
             };
 
-            var response = await BaseTriasCall<TripResponseStructure>(tripRequest).ConfigureAwait(false);
+            var response = await _triasHttpClient.BaseTriasCall<TripResponseStructure>(tripRequest).ConfigureAwait(false);
         }
 
         /// <inheritdoc cref="ITriasCommunicator" />
@@ -90,7 +87,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
                 }
             };
 
-            var response = await BaseTriasCall<StopEventResponseStructure>(stopEventRequest).ConfigureAwait(false);
+            var response = await _triasHttpClient.BaseTriasCall<StopEventResponseStructure>(stopEventRequest).ConfigureAwait(false);
 
             if (!(response.ErrorMessage?.Length > 0))
                 return new StopEventResponse(response, idStopPoint);
@@ -105,48 +102,6 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
                 _logger.LogError(ex, "{idStopPoint} - No stop events could be collected.", idStopPoint);
             }
             return new StopEventResponse(idStopPoint, new List<StopEventResult>());
-
-        }
-
-        private async Task<TType> BaseTriasCall<TType>(object requestPayload)
-        {
-            ApiRequestsCount++;
-            var serviceRequest = new ServiceRequestStructure1
-            {
-                RequestTimestamp = System.DateTime.Now,
-                RequestorRef = new ParticipantRefStructure() { Value = "OpenService" },
-                RequestPayload = new RequestPayloadStructure() { Item = requestPayload }
-            };
-            var trias = new Trias { Item = serviceRequest };
-            var text = XmlSerialisation(trias);
-
-            using var content = new StringContent(text, Encoding.UTF8, "text/xml");
-            var response = await _httpClient.PostAsync("", content).ConfigureAwait(false);
-            DownloadedBytes += response.Content?.Headers?.ContentLength ?? 0;
-            response.EnsureSuccessStatusCode();
-
-            await using var responseStream = await response.Content!.ReadAsStreamAsync().ConfigureAwait(false);
-            var responseTrias = XmlDeserialisation<Trias>(responseStream);
-            var serviceDelievery = (ServiceDeliveryStructure1)responseTrias.Item;
-            DeliveryPayloadStructure delevieryPayload = serviceDelievery.DeliveryPayload;
-
-            return (TType)delevieryPayload.Item;
-        }
-
-        private static string XmlSerialisation(object data)
-        {
-            var xmlSerializer = new XmlSerializer(data.GetType());
-            using StringWriter textWriter = new StringWriter();
-            xmlSerializer.Serialize(textWriter, data);
-
-            return textWriter.ToString();
-        }
-
-        private static TType XmlDeserialisation<TType>(Stream data)
-        {
-            var xmlSerializer = new XmlSerializer(typeof(TType));
-
-            return (TType)xmlSerializer.Deserialize(data);
         }
     }
 }

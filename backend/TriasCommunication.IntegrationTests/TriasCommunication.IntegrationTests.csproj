@@ -25,11 +25,13 @@
 
   <PropertyGroup>
     <LangVersion>9.0</LangVersion>
-    <NoWarn>CA1303;</NoWarn>
+    <NoWarn>CA1303;CA1707;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
@@ -42,6 +44,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TriasCommunication\TriasCommunication.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="trias-settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

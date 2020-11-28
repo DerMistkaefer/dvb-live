@@ -1,6 +1,8 @@
-﻿using DerMistkaefer.DvbLive.TriasCommunication.Data;
+﻿using DerMistkaefer.DvbLive.TriasCommunication.Configuration;
+using DerMistkaefer.DvbLive.TriasCommunication.Data;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
 using System;
@@ -18,6 +20,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
     public sealed class TriasCommunicator_StopEventRequestTests : IDisposable
     {
         private readonly MockHttpMessageHandler _mockHttpMessageHandler;
+        private readonly TriasHttpClient _triasHttpClient;
         private readonly TriasCommunicator _communicator;
 
         /// <summary>
@@ -25,16 +28,20 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
         /// </summary>
         public TriasCommunicator_StopEventRequestTests()
         {
+            var mockConfig = new Mock<IOptions<TriasConfiguration>>();
+            mockConfig.Setup(x => x.Value).Returns(new TriasConfiguration(new Uri("http://example.com")));
             var mockHttpClientFactory = new Mock<IHttpClientFactory>();
             _mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(_mockHttpMessageHandler.ToHttpClient());
 
-            _communicator = new TriasCommunicator(mockHttpClientFactory.Object, NullLogger<TriasCommunicator>.Instance);
+            _triasHttpClient = new TriasHttpClient(mockHttpClientFactory.Object, mockConfig.Object);
+            _communicator = new TriasCommunicator(_triasHttpClient, NullLogger<TriasCommunicator>.Instance);
         }
 
         public void Dispose()
         {
             _mockHttpMessageHandler.Dispose();
+            _triasHttpClient.Dispose();
         }
 
         [Fact]

@@ -26,7 +26,7 @@ namespace DerMistkaefer.DvbLive.Backend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddTriasCommunication();
+            services.AddTriasCommunication(Configuration);
             services.AddDistributedMemoryCache();
             services.AddEntityFrameworkMySql()
                 .AddDbContext<DvbDbContext>((serviceProvider, options) =>
