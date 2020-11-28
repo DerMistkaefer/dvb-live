@@ -39,7 +39,9 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.DependencyInjection
         {
             var config = serviceProvider.GetService<IOptions<TriasConfiguration>>();
             if (config is null)
+            {
                 throw new NullReferenceException($"The Configuration '{nameof(TriasConfiguration)}' could not be found.");
+            }
 
             return new HttpClientHandler
             {

@@ -44,7 +44,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Configuration
 
         private static TorSharpSettings DefaultTorSharpSettings => new TorSharpSettings
         {
-            TorSettings = new TorSharpTorSettings()
+            TorSettings = new TorSharpTorSettings
             {
                 ControlPassword = $"{HttpClientFactoryClientName}{DateTime.Now}"
             }

@@ -110,7 +110,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
                 .Respond("text/xml", respondBody);
             var response = await _communicator.LocationInformationStopRequest("de:14612:28").ConfigureAwait(false);
 
-            var shouldResponse = new LocationInformationStopResponse()
+            var shouldResponse = new LocationInformationStopResponse
             {
                 IdStopPoint = "de:14612:28",
                 StopPointName = "Dresden, Hauptbahnhof",

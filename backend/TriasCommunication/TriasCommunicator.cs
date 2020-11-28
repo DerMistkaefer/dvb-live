@@ -33,8 +33,8 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         {
             var locationInformationRequest = new LocationInformationRequestStructure
             {
-                Item = new LocationRefStructure() { Item = new StopPointRefStructure1 { Value = idStopPoint } },
-                Restrictions = new LocationParamStructure() { Type = new[] { LocationTypeEnumeration.stop }, IncludePtModes = true }
+                Item = new LocationRefStructure { Item = new StopPointRefStructure1 { Value = idStopPoint } },
+                Restrictions = new LocationParamStructure { Type = new[] { LocationTypeEnumeration.stop }, IncludePtModes = true }
             };
 
             var response = await _triasHttpClient.BaseTriasCall<LocationInformationResponseStructure>(locationInformationRequest).ConfigureAwait(false);
@@ -48,7 +48,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
 
             var stopPoint = (StopPointStructure)locationResult.Location.Item;
 
-            return new LocationInformationStopResponse()
+            return new LocationInformationStopResponse
             {
                 IdStopPoint = stopPoint.StopPointRef.Value,
                 StopPointName = stopPoint.StopPointName.FirstOrDefault(x => x.Language == "de")?.Text ?? "???",
@@ -59,7 +59,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
 
         public async Task TripRequest()
         {
-            var tripRequest = new TripRequestStructure()
+            var tripRequest = new TripRequestStructure
             {
 
             };
@@ -72,12 +72,12 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         {
             var stopEventRequest = new StopEventRequestStructure
             {
-                Location = new LocationContextStructure()
+                Location = new LocationContextStructure
                 {
-                    Item = new LocationRefStructure { Item = new StopPointRefStructure1() { Value = idStopPoint } },
+                    Item = new LocationRefStructure { Item = new StopPointRefStructure1 { Value = idStopPoint } },
                     DepArrTime = System.DateTime.Now
                 },
-                Params = new StopEventParamStructure()
+                Params = new StopEventParamStructure
                 {
                     TimeWindow = "5", // Include next 5 minutes of stops.
                     StopEventType = StopEventTypeEnumeration.both,
@@ -90,10 +90,14 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             var response = await _triasHttpClient.BaseTriasCall<StopEventResponseStructure>(stopEventRequest).ConfigureAwait(false);
 
             if (!(response.ErrorMessage?.Length > 0))
+            {
                 return new StopEventResponse(response, idStopPoint);
+            }
 
             if (response.ErrorMessage.First().Code == "-4030") // STOPEVENT_LOCATIONUNSERVED - Normal because not every stop point has trips in the next 5 minutes.
+            {
                 return new StopEventResponse(idStopPoint, new List<StopEventResult>());
+            }
 
             var errorCodes = response.ErrorMessage?.SelectMany(x => x.Text).Select(x => x.Text) ?? new List<string>();
             var ex = new StopEventException($"No stop events could be collected. {string.Join('-', errorCodes)}");

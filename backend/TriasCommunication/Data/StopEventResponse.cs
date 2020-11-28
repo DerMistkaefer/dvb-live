@@ -112,10 +112,14 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Data
             var stopEvent = stopEventResult.StopEvent;
             var stops = new List<StopEventCall>();
             if (stopEvent.PreviousCall != null)
+            {
                 stops.AddRange(stopEvent.PreviousCall.Select(call => new StopEventCall(call, CallType.Previous)));
+            }
             stops.Add(new StopEventCall(stopEvent.ThisCall, CallType.This));
             if (stopEvent.OnwardCall != null)
+            {
                 stops.AddRange(stopEvent.OnwardCall.Select(call => new StopEventCall(call, CallType.Onward)));
+            }
             Stops = stops;
 
             OperatingDayRef = stopEvent.Service.OperatingDayRef.Value != null ? Convert.ToDateTime(stopEvent.Service.OperatingDayRef.Value.Replace("T", "", StringComparison.CurrentCultureIgnoreCase), CultureInfo.InvariantCulture) : DateTime.Today;

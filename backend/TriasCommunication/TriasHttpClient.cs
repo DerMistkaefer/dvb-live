@@ -34,8 +34,8 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             var serviceRequest = new ServiceRequestStructure1
             {
                 RequestTimestamp = System.DateTime.Now,
-                RequestorRef = new ParticipantRefStructure() { Value = "OpenService" },
-                RequestPayload = new RequestPayloadStructure() { Item = requestPayload }
+                RequestorRef = new ParticipantRefStructure { Value = "OpenService" },
+                RequestPayload = new RequestPayloadStructure { Item = requestPayload }
             };
             var trias = new Trias { Item = serviceRequest };
             var text = XmlSerialisation(trias);

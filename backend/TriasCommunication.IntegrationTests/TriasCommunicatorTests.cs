@@ -1,8 +1,8 @@
 using DerMistkaefer.DvbLive.TriasCommunication.Data;
+using DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests.LibrarySetup;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
-using DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests.LibrarySetup;
 using Xunit;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests
@@ -29,7 +29,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests
         {
             var response = await _communicator.LocationInformationStopRequest("de:14612:28").ConfigureAwait(false);
 
-            var shouldResponse = new LocationInformationStopResponse()
+            var shouldResponse = new LocationInformationStopResponse
             {
                 IdStopPoint = "de:14612:28",
                 StopPointName = "Dresden, Hauptbahnhof",

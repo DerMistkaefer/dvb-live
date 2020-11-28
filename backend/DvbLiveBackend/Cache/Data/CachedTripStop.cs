@@ -73,7 +73,9 @@ namespace DerMistkaefer.DvbLive.Backend.Cache.Data
         public void UpdateTripStopData(StopEventCall call)
         {
             if (call is null)
+            {
                 throw new ArgumentNullException(nameof(call));
+            }
 
             ArrivalTimeTableTime = call.ArrivalTimeTableTime;
             ArrivalEstimatedTime = call.ArrivalEstimatedTime;

@@ -39,7 +39,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
         {
             var testedFields = new List<bool>();
             foreach (var field in data.GetType().GetFields())
-            { 
+            {
                 var fieldIo = TestField(field, errorPath);
                 testedFields.Add(fieldIo);
             }
@@ -67,7 +67,6 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
             var testedClass = new List<(Type type, bool result)>();
             foreach (var type in types.Where(type => type.Namespace == typeof(Trias).Namespace))
             {
-                var elementType = type.GetElementType();
                 var testType = type.GetElementType() ?? type; // Array/List -> Use Base Type
                 var typeData = Activator.CreateInstance(testType);
                 if (typeData != null)
@@ -88,7 +87,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
         {
             try
             {
-                var xmlSerializer = new XmlSerializer(data.GetType());
+                _ = new XmlSerializer(data.GetType());
                 return true;
             }
             catch (PlatformNotSupportedException)
