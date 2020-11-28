@@ -44,6 +44,10 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Configuration
 
         private static TorSharpSettings DefaultTorSharpSettings => new TorSharpSettings
         {
+            PrivoxySettings = new TorSharpPrivoxySettings
+            {
+                MaxClientConnections = 20000
+            },
             TorSettings = new TorSharpTorSettings
             {
                 ControlPassword = $"{HttpClientFactoryClientName}{DateTime.Now}"
