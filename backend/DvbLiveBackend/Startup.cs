@@ -3,6 +3,7 @@ using DerMistkaefer.DvbLive.Backend.Cache.Api;
 using DerMistkaefer.DvbLive.Backend.Database;
 using DerMistkaefer.DvbLive.Backend.Database.Api;
 using DerMistkaefer.DvbLive.Backend.HostedServices;
+using DerMistkaefer.DvbLive.Backend.ServiceSetup;
 using DerMistkaefer.DvbLive.TriasCommunication.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,6 +39,8 @@ namespace DerMistkaefer.DvbLive.Backend
             services.AddSingleton<ICacheAdapter, CacheAdapter>();
             services.AddSingleton<IDatabaseAdapter, DatabaseAdapter>();
             services.AddHostedService<TripLogger>();
+
+            services.AddSwaggerDvbLive();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,6 +50,8 @@ namespace DerMistkaefer.DvbLive.Backend
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwaggerDvbLive();
 
             app.UseRouting();
 
