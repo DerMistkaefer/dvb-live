@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests.LibrarySetup
 {
@@ -37,7 +36,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests.LibrarySetup
             var hostedServices = serviceProvider.GetServices<IHostedService>();
             foreach (var hostedService in hostedServices)
             {
-                Task.Run(() => hostedService.StartAsync(CancellationToken.None));
+                hostedService.StartAsync(CancellationToken.None).Wait();
             }
 
             return serviceProvider;
