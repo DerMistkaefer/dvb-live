@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /source
 
 # copy and restore as distinct layers
-COPY /backend/* .
+COPY /backend/* ./
 RUN dotnet restore -r linux-x64
 
 # build app
