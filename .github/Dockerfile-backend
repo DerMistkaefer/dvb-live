@@ -4,7 +4,7 @@ WORKDIR /source
 
 # copy and restore as distinct layers
 COPY /backend/* ./
-RUN dotnet restore -r linux-x64
+RUN dotnet restore *.sln -r linux-x64
 
 # build app
 WORKDIR /source/DvbLiveBackend
