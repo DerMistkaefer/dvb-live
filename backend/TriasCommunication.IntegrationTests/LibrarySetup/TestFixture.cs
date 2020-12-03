@@ -38,6 +38,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests.LibrarySetup
             {
                 hostedService.StartAsync(CancellationToken.None).Wait();
             }
+            Thread.Sleep(10000);
 
             return serviceProvider;
         }
