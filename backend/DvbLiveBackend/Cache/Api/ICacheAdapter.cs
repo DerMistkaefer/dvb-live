@@ -18,5 +18,7 @@ namespace DerMistkaefer.DvbLive.Backend.Cache.Api
         CachedTrip AddTripCache(StopEventResult stopEvent);
 
         CachedTrip UpdateTripCache(StopEventResult stopEvent);
+
+        IEnumerable<CachedStopPoint> GetAllStopPoints();
     }
 }

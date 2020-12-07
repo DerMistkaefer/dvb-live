@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace DerMistkaefer.DvbLive.Backend.Controllers
 {
@@ -11,10 +7,10 @@ namespace DerMistkaefer.DvbLive.Backend.Controllers
     /// </summary>
     [ApiController]
     [Route("live")]
-    public class LiveDataController : ControllerBase
+    public class LiveDataController : Controller
     {
         /// <summary>
-        /// initialisation with dependencies
+        /// Initialisation with dependencies
         /// </summary>
         public LiveDataController()
         {

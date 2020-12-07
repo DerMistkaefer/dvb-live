@@ -19,6 +19,7 @@ namespace DerMistkaefer.DvbLive.Backend.Cache
         private readonly ILogger<CacheAdapter> _logger;
         private readonly IDatabaseAdapter _databaseAdapter;
         private ConcurrentDictionary<string, bool> _existsStopPoints;
+        private ConcurrentDictionary<string, CachedStopPoint> _stopPointCache;
         private readonly ConcurrentDictionary<string, bool> _existsTrips;
         private readonly ConcurrentDictionary<string, CachedTrip> _tripCache;
 
@@ -28,6 +29,7 @@ namespace DerMistkaefer.DvbLive.Backend.Cache
             _databaseAdapter = databaseAdapter;
             _existsStopPoints = new ConcurrentDictionary<string, bool>();
             _existsTrips = new ConcurrentDictionary<string, bool>();
+            _stopPointCache = new ConcurrentDictionary<string, CachedStopPoint>();
             _tripCache = new ConcurrentDictionary<string, CachedTrip>();
             LoadCacheFromStorage().Wait();
         }
@@ -37,6 +39,14 @@ namespace DerMistkaefer.DvbLive.Backend.Cache
             var data = await _databaseAdapter.GetAllStopPoints().ConfigureAwait(false);
             var istStopPoints = data.Select(x => new KeyValuePair<string, bool>(x.TriasIdStopPoint, true));
             _existsStopPoints = new ConcurrentDictionary<string, bool>(istStopPoints);
+            var istStopPointCache = data.Select(x => new KeyValuePair<string, CachedStopPoint>(x.TriasIdStopPoint, new CachedStopPoint
+            {
+                TriasIdStopPoint = x.TriasIdStopPoint,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
+                StopPointName = x.StopPointName
+            }));
+            _stopPointCache = new ConcurrentDictionary<string, CachedStopPoint>(istStopPointCache);
         }
 
         /// <inheritdoc cref="ICacheAdapter"/>
@@ -67,6 +77,7 @@ namespace DerMistkaefer.DvbLive.Backend.Cache
 
         private async Task CacheStopPoint(CachedStopPoint stopPoint)
         {
+            _stopPointCache.TryAdd(stopPoint.TriasIdStopPoint, stopPoint);
             var entity = new StopPoints
             {
                 TriasIdStopPoint = stopPoint.TriasIdStopPoint,
@@ -119,6 +130,10 @@ namespace DerMistkaefer.DvbLive.Backend.Cache
 
             return cacheTrip;
         }
+
+        /// <inheritdoc cref="ICacheAdapter"/>
+        public IEnumerable<CachedStopPoint> GetAllStopPoints()
+            => _stopPointCache.Select(x => x.Value);
 
         private CachedTrip? GetTripCache(DateTime operatingDayRef, string journeyRef)
         {

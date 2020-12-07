@@ -13,13 +13,23 @@ using System.Threading.Tasks;
 
 namespace DerMistkaefer.DvbLive.Backend.HostedServices
 {
-    public class TripLogger : IHostedService
+    /// <summary>
+    /// Hosted Service for the Observation and Logging of Trips
+    /// </summary>
+    public sealed class TripLogger : IHostedService, IDisposable
     {
         private readonly ITriasCommunicator _triasCommunicator;
         private readonly ICacheAdapter _cacheAdapter;
         private readonly ILogger<TripLogger> _logger;
         private readonly List<string> _stopPointsProcessed;
+        private Timer? _timer;
 
+        /// <summary>
+        /// Load all dependencies in the Hosted Service.
+        /// </summary>
+        /// <param name="triasCommunicator">Trias Commincatior service</param>
+        /// <param name="cacheAdapter">Adapter for the Cache</param>
+        /// <param name="logger">Service to log events</param>
         public TripLogger(
             ITriasCommunicator triasCommunicator,
             ICacheAdapter cacheAdapter,
@@ -32,11 +42,36 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
             _stopPointsProcessed = new List<string>();
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        /// <inheritdoc cref="IHostedService"/>
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Trip Logger Service is starting.");
+            _timer = new Timer(DoLogging, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
+
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc cref="IHostedService"/>
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Trip Logger Service is stopping.");
+
+            _timer?.Change(Timeout.Infinite, 0);
+
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc cref="IDisposable"/>
+        public void Dispose()
+        {
+            _timer?.Dispose();
+        }
+
+        private void DoLogging(object? state)
         {
             try
             {
-                await StartLogger().ConfigureAwait(false);
+                DoLoggingAsync().Wait();
             }
             catch (Exception ex)
             {
@@ -44,12 +79,7 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
             }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        private async Task StartLogger()
+        private async Task DoLoggingAsync()
         {
             var stopWatch = Stopwatch.StartNew();
 

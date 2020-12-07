@@ -26,6 +26,7 @@
     <Nullable>Enable</Nullable>
     <LangVersion>9.0</LangVersion>
     <NoWarn>CA1303;CA1031;CA1812;</NoWarn>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,5 +46,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TriasCommunication\TriasCommunication.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ApiStructure\Input\" />
   </ItemGroup>
 </Project>
