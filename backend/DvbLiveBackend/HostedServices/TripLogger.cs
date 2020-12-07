@@ -75,8 +75,7 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
             }
             catch (Exception ex)
             {
-                var baseException = ex.GetBaseException();
-                _logger.LogError(baseException, "Error in {class}", nameof(TripLogger));
+                _logger.LogError(ex, "Error in {class}", nameof(TripLogger));
             }
         }
 
