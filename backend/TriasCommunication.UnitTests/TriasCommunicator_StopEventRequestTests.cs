@@ -34,7 +34,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
             _mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(_mockHttpMessageHandler.ToHttpClient());
 
-            _triasHttpClient = new TriasHttpClient(mockHttpClientFactory.Object, mockConfig.Object);
+            _triasHttpClient = new TriasHttpClient(mockHttpClientFactory.Object, mockConfig.Object, NullLogger<TriasHttpClient>.Instance);
             _communicator = new TriasCommunicator(_triasHttpClient, NullLogger<TriasCommunicator>.Instance);
         }
 
