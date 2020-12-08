@@ -1,4 +1,6 @@
 ﻿using DerMistkaefer.DvbLive.TriasCommunication.Configuration;
+using DerMistkaefer.DvbLive.TriasCommunication.Data;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.IO;
@@ -16,21 +18,24 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
     /// </summary>
     internal class TriasHttpClient : ITriasHttpClient, IDisposable
     {
-        public int ApiRequestsCount { get; private set; }
-        public long DownloadedBytes { get; private set; }
-
+        private readonly ILogger<TriasHttpClient> _logger;
         private readonly HttpClient _httpClient;
 
-        public TriasHttpClient(IHttpClientFactory httpClientFactory, IOptions<TriasConfiguration> triasConfiguration)
+        /// <inheritdoc cref="ITriasHttpClient"/>
+        public event TriasEventHandlers.RequestFinishedEventHandler? RequestFinished;
+
+        public TriasHttpClient(IHttpClientFactory httpClientFactory, IOptions<TriasConfiguration> triasConfiguration, ILogger<TriasHttpClient> logger)
         {
+            _logger = logger;
             _httpClient = httpClientFactory.CreateClient(TriasConfiguration.HttpClientFactoryClientName);
             _httpClient.BaseAddress = triasConfiguration.Value.TriasUrl;
+            _httpClient.Timeout = TimeSpan.FromSeconds(30);
+
         }
 
         /// <inheritdoc cref="ITriasHttpClient"/>
         public async Task<TType> BaseTriasCall<TType>(object requestPayload)
         {
-            ApiRequestsCount++;
             var serviceRequest = new ServiceRequestStructure1
             {
                 RequestTimestamp = System.DateTime.Now,
@@ -40,9 +45,8 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             var trias = new Trias { Item = serviceRequest };
             var text = XmlSerialisation(trias);
 
-            using var content = new StringContent(text, Encoding.UTF8, "text/xml");
-            var response = await _httpClient.PostAsync("", content).ConfigureAwait(false);
-            DownloadedBytes += response.Content?.Headers?.ContentLength ?? 0;
+            var response = await TriasRequestClientHandling(text).ConfigureAwait(false);
+            OnRequestFinished(response);
             await EnsureSuccessTriasResponse(response).ConfigureAwait(false);
 
             await using var responseStream = await response.Content!.ReadAsStreamAsync().ConfigureAwait(false);
@@ -51,6 +55,21 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             DeliveryPayloadStructure delevieryPayload = serviceDelievery.DeliveryPayload;
 
             return (TType)delevieryPayload.Item;
+        }
+
+        private async Task<HttpResponseMessage> TriasRequestClientHandling(string requestXmlString, int retryCount = 0)
+        {
+            try
+            {
+                using var content = new StringContent(requestXmlString, Encoding.UTF8, "text/xml");
+                return await _httpClient.PostAsync("", content).ConfigureAwait(false);
+            }
+            catch (TaskCanceledException) when (retryCount < 5)
+            {
+                _logger.LogInformation("Retry Request");
+                retryCount++;
+                return await TriasRequestClientHandling(requestXmlString, retryCount).ConfigureAwait(false);
+            }
         }
 
         private static async Task EnsureSuccessTriasResponse(HttpResponseMessage response)
@@ -95,6 +114,15 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             var xmlSerializer = new XmlSerializer(typeof(TType));
 
             return (TType)xmlSerializer.Deserialize(xmlReader);
+        }
+
+        protected virtual void OnRequestFinished(HttpResponseMessage response)
+        {
+            var downloadedBytes = response.Content?.Headers?.ContentLength ?? 0;
+            var eventArgs = new RequestFinishedEventArgs(downloadedBytes);
+
+            var handler = RequestFinished;
+            handler?.Invoke(this, eventArgs);
         }
 
         public void Dispose()

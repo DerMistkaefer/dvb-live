@@ -21,8 +21,11 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
         private readonly ITriasCommunicator _triasCommunicator;
         private readonly ICacheAdapter _cacheAdapter;
         private readonly ILogger<TripLogger> _logger;
-        private readonly List<string> _stopPointsProcessed;
         private Timer? _timer;
+
+        private int _runApiRequestCount = 0;
+        private long _runDownloadedBytes = 0;
+        private List<string> _runStopPointsProcessed = new List<string>();
 
         /// <summary>
         /// Load all dependencies in the Hosted Service.
@@ -37,9 +40,9 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
             )
         {
             _triasCommunicator = triasCommunicator;
+            _triasCommunicator.RequestFinished += OnTriasCommunicatorRequestFinished;
             _cacheAdapter = cacheAdapter;
             _logger = logger;
-            _stopPointsProcessed = new List<string>();
         }
 
         /// <inheritdoc cref="IHostedService"/>
@@ -81,9 +84,12 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
 
         private async Task DoLoggingAsync()
         {
+            _runApiRequestCount = 0;
+            _runDownloadedBytes = 0;
+            _runStopPointsProcessed = new List<string>();
+
             var stopWatch = Stopwatch.StartNew();
 
-            //await LoadCache();
             await GetInitStopPoint().ConfigureAwait(false);
             ObserveTripsFromStopPoints();
 
@@ -96,9 +102,18 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
 
         private void PrintTriasCommunicatorUssage(double totalSeconds)
         {
-            var apiRequestsCount = _triasCommunicator.ApiRequestsCount;
-            var downloadedKb = _triasCommunicator.DownloadedBytes / 1000;
-            _logger.LogInformation($"TriasCommunicator - Requests: {apiRequestsCount} - Time: {totalSeconds}s - {apiRequestsCount / totalSeconds} r/s - {downloadedKb} KB");
+            var apiRequestsCountRun = _runApiRequestCount;
+            var downloadedKbRun = _runDownloadedBytes / 1000;
+            _logger.LogInformation($"TriasCommunicator - Requests Run: {apiRequestsCountRun} - Time: {totalSeconds}s - {apiRequestsCountRun / totalSeconds} r/s - {downloadedKbRun} KB");
+            var apiRequestsCountTotal = _triasCommunicator.TotalApiRequestsCount;
+            var downloadedKbTotal = _triasCommunicator.TotalDownloadedBytes / 1000;
+            _logger.LogInformation($"TriasCommunicator - Requests Total: {apiRequestsCountTotal} - {downloadedKbTotal} KB");
+        }
+
+        private void OnTriasCommunicatorRequestFinished(object sender, RequestFinishedEventArgs e)
+        {
+            _runApiRequestCount++;
+            _runDownloadedBytes += e.DownloadedBytes;
         }
 
         private async Task GetInitStopPoint()
@@ -140,8 +155,8 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
 
         private List<string> GetQueryStopPointsObserve()
         {
-            var cacheHaltestellenNextRun = _cacheAdapter.GetStopPointIds().Where(x => !_stopPointsProcessed.Contains(x)).ToList();
-            _stopPointsProcessed.AddRange(cacheHaltestellenNextRun);
+            var cacheHaltestellenNextRun = _cacheAdapter.GetStopPointIds().Where(x => !_runStopPointsProcessed.Contains(x)).ToList();
+            _runStopPointsProcessed.AddRange(cacheHaltestellenNextRun);
 
             return cacheHaltestellenNextRun;
         }

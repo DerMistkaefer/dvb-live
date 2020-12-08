@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using DerMistkaefer.DvbLive.TriasCommunication.Data;
+﻿using DerMistkaefer.DvbLive.TriasCommunication.Data;
+using System.Threading.Tasks;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication
 {
@@ -11,12 +11,17 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         /// <summary>
         /// Count of Requests to the Trias-Api
         /// </summary>
-        public int ApiRequestsCount { get; }
+        public int TotalApiRequestsCount { get; }
 
         /// <summary>
         /// Size of Downloaded Bytes from the Trias-Api
         /// </summary>
-        public long DownloadedBytes { get; }
+        public long TotalDownloadedBytes { get; }
+
+        /// <summary>
+        /// Event Handler that will be triggered when a request is finished.
+        /// </summary>
+        public event TriasEventHandlers.RequestFinishedEventHandler? RequestFinished;
 
         /// <summary>
         /// Get Location Information from an StopPoint

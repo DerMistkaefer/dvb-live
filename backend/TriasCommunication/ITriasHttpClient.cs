@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using DerMistkaefer.DvbLive.TriasCommunication.Data;
+using System.Threading.Tasks;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication
 {
@@ -8,14 +9,9 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
     internal interface ITriasHttpClient
     {
         /// <summary>
-        /// Count of Requests to the Trias-Api
+        /// Event Handler that will be triggered when a request is finished.
         /// </summary>
-        public int ApiRequestsCount { get; }
-
-        /// <summary>
-        /// Size of Downloaded Bytes from the Trias-Api
-        /// </summary>
-        public long DownloadedBytes { get; }
+        public event TriasEventHandlers.RequestFinishedEventHandler? RequestFinished;
 
         /// <summary>
         /// Base Call to the Trias-Api.

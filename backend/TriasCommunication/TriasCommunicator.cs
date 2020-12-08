@@ -19,14 +19,18 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         public TriasCommunicator(ITriasHttpClient triasHttpClient, ILogger<TriasCommunicator> logger)
         {
             _triasHttpClient = triasHttpClient;
+            _triasHttpClient.RequestFinished += OnClientRequestFinished;
             _logger = logger;
         }
 
         /// <inheritdoc cref="ITriasCommunicator"/>
-        public int ApiRequestsCount => _triasHttpClient.ApiRequestsCount;
+        public int TotalApiRequestsCount { get; private set; }
 
         /// <inheritdoc cref="ITriasCommunicator"/>
-        public long DownloadedBytes => _triasHttpClient.DownloadedBytes;
+        public long TotalDownloadedBytes { get; private set; }
+
+        /// <inheritdoc cref="ITriasCommunicator" />
+        public event TriasEventHandlers.RequestFinishedEventHandler? RequestFinished;
 
         /// <inheritdoc cref="ITriasCommunicator" />
         public async Task<LocationInformationStopResponse> LocationInformationStopRequest(string idStopPoint)
@@ -106,6 +110,15 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
                 _logger.LogError(ex, "{idStopPoint} - No stop events could be collected.", idStopPoint);
             }
             return new StopEventResponse(idStopPoint, new List<StopEventResult>());
+        }
+
+        private void OnClientRequestFinished(object sender, RequestFinishedEventArgs e)
+        {
+            TotalApiRequestsCount++;
+            TotalDownloadedBytes += e.DownloadedBytes;
+
+            var handler = RequestFinished;
+            handler?.Invoke(this, e);
         }
     }
 }
