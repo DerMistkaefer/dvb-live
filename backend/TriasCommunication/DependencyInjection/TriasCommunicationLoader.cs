@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Net;
 using System.Net.Http;
+using DerMistkaefer.DvbLive.IPGeolocation.DependencyInjection;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication.DependencyInjection
 {
@@ -24,7 +25,11 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.DependencyInjection
         /// <param name="configuration">Configuration</param>
         public static void AddTriasCommunication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<TriasConfiguration>(configuration?.GetSection("TriasCommunication"));
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+            services.Configure<TriasConfiguration>(configuration.GetSection("TriasCommunication"));
             services.AddHttpClient();
             services.AddHttpClient(TriasConfiguration.HttpClientFactoryClientName)
                 .ConfigurePrimaryHttpMessageHandler(BuildProxyHttpMessageHandler);
@@ -33,6 +38,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.DependencyInjection
             services.AddHostedService<TorSharpProxyHostedService>();
             // Disable Logging for HttpClient.
             services.RemoveAll<IHttpMessageHandlerBuilderFilter>();
+            services.AddIpGeolocation(configuration);
         }
 
         private static HttpClientHandler BuildProxyHttpMessageHandler(IServiceProvider serviceProvider)
