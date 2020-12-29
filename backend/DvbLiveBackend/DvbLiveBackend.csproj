@@ -27,6 +27,7 @@
     <LangVersion>9.0</LangVersion>
     <NoWarn>CA1303;CA1031;CA1812;</NoWarn>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
 
   <ItemGroup>

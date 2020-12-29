@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>Enable</Nullable>
+    <RootNamespace>DerMistkaefer.DvbLive.IPGeolocation</RootNamespace>
+    <AssemblyName>DerMistkaefer.DvbLive.IPGeolocation</AssemblyName>
+    <Authors>DerMistkaefer</Authors>
+    <Version>0.0.1</Version>
+    <Description>IP Geolocation Librarie for DVB Live</Description>
+    <Copyright>2020 DerMistkaefer</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/DerMistkaefer/DvbLive</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/DerMistkaefer/DvbLive</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <LangVersion>9.0</LangVersion>
+    <NoWarn>CA1303;</NoWarn>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
+  </ItemGroup>
+
+</Project>

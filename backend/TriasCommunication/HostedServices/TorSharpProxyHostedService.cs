@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.HostedServices
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<TorSharpProxyHostedService> _logger;
         private readonly ITorSharpProxy _proxy;
+        private readonly HttpClient _proxyHttpClient;
         private Timer? _timer;
 
         public TorSharpProxyHostedService(
@@ -31,7 +33,13 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.HostedServices
             _triasConfiguration = triasConfiguration;
             _httpClientFactory = httpClientFactory;
             _logger = logger;
-            _proxy = new TorSharpProxy(triasConfiguration.Value.TorSharpSettings);
+            var config = triasConfiguration.Value;
+            _proxy = new TorSharpProxy(config.TorSharpSettings);
+            var proxyHttpClientHandler = new HttpClientHandler
+            {
+                Proxy = new WebProxy(new Uri($"http://localhost:{config.TorSharpSettings.PrivoxySettings.Port}"))
+            };
+            _proxyHttpClient = new HttpClient(proxyHttpClientHandler);
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -61,6 +69,11 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.HostedServices
         {
             _timer?.Dispose();
             _proxy.Dispose();
+        }
+
+        private async Task CheckIdentity()
+        {
+            // TODO Access IPGeolocation Lib
         }
     }
 }
