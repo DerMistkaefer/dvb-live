@@ -46,10 +46,13 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Configuration
         {
             PrivoxySettings = new TorSharpPrivoxySettings
             {
+                Port = 1337,
                 MaxClientConnections = 20000
             },
             TorSettings = new TorSharpTorSettings
             {
+                SocksPort = 1338,
+                ControlPort = 1339,
                 ControlPassword = $"{HttpClientFactoryClientName}{DateTime.Now}"
             }
         };
