@@ -1,10 +1,13 @@
 ﻿using DerMistkaefer.DvbLive.IPGeolocation.Models;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DerMistkaefer.DvbLive.IPGeolocation.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace DerMistkaefer.DvbLive.IPGeolocation
 {
@@ -14,6 +17,7 @@ namespace DerMistkaefer.DvbLive.IPGeolocation
     /// </summary>
     internal class IpStackGeolocation : IIpGeolocation
     {
+        private readonly ILogger<IpStackGeolocation> _logger;
         private readonly string _accessKey;
         private HttpClient? _defaultHttpClient;
 
@@ -22,8 +26,9 @@ namespace DerMistkaefer.DvbLive.IPGeolocation
             get { return _defaultHttpClient ??= new HttpClient(); }
         }
 
-        public IpStackGeolocation(IOptions<IpGeolocationConfiguration> ipGeoLocationOptions)
+        public IpStackGeolocation(IOptions<IpGeolocationConfiguration> ipGeoLocationOptions, ILogger<IpStackGeolocation> logger)
         {
+            _logger = logger;
             var config = ipGeoLocationOptions.Value;
             _accessKey = config.AccessKey;
         }
@@ -49,6 +54,26 @@ namespace DerMistkaefer.DvbLive.IPGeolocation
             var ipStackResponse = await response.Content.ReadAsAsync<IpStackResponse>().ConfigureAwait(false);
 
             return $"{ipStackResponse.ContinentName} - {ipStackResponse.RegionName} - {ipStackResponse.City}";
+        }
+
+        private async Task<IpStackResponse?> BaseGeolocateRequest(HttpClient httpClient, Uri uri)
+        {
+            var response = await DefaultHttpClient.PostAsync(uri, null).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+            try
+            {
+                return await response.Content.ReadAsAsync<IpStackResponse>().ConfigureAwait(false);
+            }
+            catch (JsonSerializationException ex)
+            {
+                var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                using (_logger.BeginScope(new Dictionary<string, object> {{"requestUri", uri}, { "response", responseString}}))
+                {
+                    _logger.LogError(ex, "Error converting IpGeolocation Response.");
+                }
+                
+                return null;   
+            }
         }
     }
 }

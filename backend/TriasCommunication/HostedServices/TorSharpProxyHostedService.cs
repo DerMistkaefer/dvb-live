@@ -54,7 +54,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.HostedServices
             await _proxy.ConfigureAndStartAsync().ConfigureAwait(false);
             await CheckIdentity().ConfigureAwait(false);
 
-            _timer = new Timer(SwitchToNewIdentity, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+            _timer = new Timer(SwitchToNewIdentity, null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
         }
 
         private void SwitchToNewIdentity(object state)

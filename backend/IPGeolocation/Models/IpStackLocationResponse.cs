@@ -6,7 +6,7 @@ namespace DerMistkaefer.DvbLive.IPGeolocation.Models
     internal class IpStackLocationResponse
     {
         [JsonProperty(PropertyName = "geoname_id")]
-        public int GeonameId { get; set; }
+        public int? GeonameId { get; set; }
 
         [JsonProperty(PropertyName = "capital")]
         public string Capital { get; set; } = "";
