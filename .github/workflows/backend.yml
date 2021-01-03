@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Install Privoxy and Dependencies
+      uses: mstksg/get-package@v1
+      with:
+        apt-get: privoxy libbrotli-dev libmbedtls-dev
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1.7.2
       with:
