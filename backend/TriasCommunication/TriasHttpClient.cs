@@ -16,7 +16,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
     /// <summary>
     /// HttpClient for the Trias-Api.
     /// </summary>
-    internal class TriasHttpClient : ITriasHttpClient, IDisposable
+    internal sealed class TriasHttpClient : ITriasHttpClient, IDisposable
     {
         private readonly ILogger<TriasHttpClient> _logger;
         private readonly HttpClient _httpClient;
@@ -76,23 +76,30 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         {
             if (!response.IsSuccessStatusCode)
             {
-                var requestString = "";
-                if (response.RequestMessage.Content != null)
-                {
-                    requestString = await response.RequestMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-                }
-                var responeString = "";
-                if (response.Content != null)
-                {
-                    responeString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                }
-
+                var requestString = await GetHttpContentAsStringSave(response.RequestMessage.Content).ConfigureAwait(false);
+                var responeString = await GetHttpContentAsStringSave(response.Content).ConfigureAwait(false);
+                
                 var ex = new HttpRequestException($"Response status code does not indicate success: {(int)response.StatusCode} ({response.ReasonPhrase}).");
                 ex.Data["Request"] = requestString;
                 ex.Data["Response"] = responeString;
                 throw ex;
             }
         }
+
+        private static async Task<string> GetHttpContentAsStringSave(HttpContent httpContent)
+        {
+            var httpContentString = "";
+            try
+            {
+                httpContentString = await httpContent.ReadAsStringAsync().ConfigureAwait(false);
+            }
+            catch (ObjectDisposedException ex)
+            {
+                httpContentString = ex.Message;
+            }
+
+            return httpContentString;
+        } 
 
         private static string XmlSerialisation(object data)
         {
@@ -116,7 +123,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             return (TType)xmlSerializer.Deserialize(xmlReader);
         }
 
-        protected virtual void OnRequestFinished(HttpResponseMessage response)
+        private void OnRequestFinished(HttpResponseMessage response)
         {
             var downloadedBytes = response.Content?.Headers?.ContentLength ?? 0;
             var eventArgs = new RequestFinishedEventArgs(downloadedBytes);
