@@ -26,10 +26,12 @@
     <LangVersion>9.0</LangVersion>
     <NoWarn>CA1303;</NoWarn>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Knapcode.TorSharp" Version="2.5.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
@@ -38,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IPGeolocation\IPGeolocation.csproj" />
     <ProjectReference Include="..\TriasDataStructure\TriasDataStructure.csproj">
       <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
