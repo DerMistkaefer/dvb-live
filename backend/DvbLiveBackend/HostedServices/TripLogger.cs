@@ -172,10 +172,20 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
             //_logger.LogDebug("#############################################");
             //PrintTriasCommunicatorUssage(1);
 
-            var data = await _triasCommunicator.StopEventRequest(triasIdStopPoint).ConfigureAwait(false);
+            try
+            {
+                var data = await _triasCommunicator.StopEventRequest(triasIdStopPoint).ConfigureAwait(false);
 
-            var collectStopEventTasks = data.StopEvents.Select(stopEvent => CollectStopEvent(triasIdStopPoint, stopEvent)).ToList();
-            await Task.WhenAll(collectStopEventTasks).ConfigureAwait(false);
+                var collectStopEventTasks = data.StopEvents.Select(stopEvent => CollectStopEvent(triasIdStopPoint, stopEvent)).ToList();
+                await Task.WhenAll(collectStopEventTasks).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                using (_logger.BeginScope(new Dictionary<string, object> { { "key", key }, { "triasIdStopPoint", triasIdStopPoint } }))
+                {
+                    _logger.LogError(ex, "Error in {class} - {function}", nameof(TripLogger), nameof(ObserveTripsFromStopPoint));
+                }
+            }
         }
 
         private async Task CollectStopEvent(string triasIdStopPoint, StopEventResult stopEvent)
