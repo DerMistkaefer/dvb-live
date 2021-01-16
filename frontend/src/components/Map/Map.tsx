@@ -1,9 +1,14 @@
 import React, {useEffect, useState, createRef} from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import './Map.css';
+import './Map.css'
+if (process.env.NODE_ENV !== 'test') {
+    // @ts-ignore
+    // eslint-disable-next-line import/no-webpack-loader-syntax
+    mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
+}
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiZGVybWlzdGthZWZlciIsImEiOiJja2p6a3N1anIwOGsxMm9saXh2cHVqOWFsIn0.4Meqc5o2hXG7queAZoP3mg';
+mapboxgl.accessToken = 'pk.eyJ1IjoiZGVybWlzdGthZWZlciIsImEiOiJja2swYWQ0NHAwZm16Mm9rMmE3M3k2Zjk3In0.p8sQOMjTL_muHCN36uY9iA';
 
 const Map = () => {
     const mapContainerRef = createRef<HTMLDivElement>();
