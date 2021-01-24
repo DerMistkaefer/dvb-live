@@ -1,54 +1,92 @@
-import React, {useEffect, useState, createRef} from 'react';
-import mapboxgl from 'mapbox-gl';
+import React, {useState} from 'react';
+import ReactMapboxGl, {Feature, Layer, Popup, RotationControl, ScaleControl, ZoomControl} from 'react-mapbox-gl';
+import MapboxGl, {FlyToOptions} from "mapbox-gl";
 import 'mapbox-gl/dist/mapbox-gl.css';
-import './Map.css'
-if (process.env.NODE_ENV !== 'test') {
-    // @ts-ignore
-    // eslint-disable-next-line import/no-webpack-loader-syntax
-    mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
-}
+import {useQuery} from 'react-query';
+import {getAllStopPoints, StopPoint} from "../../services/backend";
+import PositionControl from './PositionControl';
+import './Map.css';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiZGVybWlzdGthZWZlciIsImEiOiJja2swYWQ0NHAwZm16Mm9rMmE3M3k2Zjk3In0.p8sQOMjTL_muHCN36uY9iA';
+MapboxGl.accessToken = 'pk.eyJ1IjoiZGVybWlzdGthZWZlciIsImEiOiJja2swYWQ0NHAwZm16Mm9rMmE3M3k2Zjk3In0.p8sQOMjTL_muHCN36uY9iA';
+const Mapbox = ReactMapboxGl({
+    accessToken: 'pk.eyJ1IjoiZGVybWlzdGthZWZlciIsImEiOiJja2swYWQ0NHAwZm16Mm9rMmE3M3k2Zjk3In0.p8sQOMjTL_muHCN36uY9iA'
+});
+
+const StyledPopup: React.CSSProperties = {
+    color: "#3f618c",
+    fontWeight: 400,
+};
+
+const flyToOptions: FlyToOptions = {
+    speed: 0.8
+};
 
 const Map = () => {
-    const mapContainerRef = createRef<HTMLDivElement>();
-
     const [lng, setLng] = useState(13.738);
     const [lat, setLat] = useState(51.0497);
     const [zoom, setZoom] = useState(12);
+    const [selectedStopPoint, setSelectedStopPoint] = useState<StopPoint|undefined>(undefined)
+    const [mapboxMap, setMapboxMap] = useState<mapboxgl.Map|undefined>(undefined)
 
-    // Initialize map when component mounts
-    useEffect(() => {
-        const map = new mapboxgl.Map({
-            container: mapContainerRef.current!,
-            style: 'mapbox://styles/mapbox/streets-v11',
-            center: [lng, lat],
-            zoom: zoom
-        });
+    const onDrag = () => {
+        if (selectedStopPoint)
+        {
+            setSelectedStopPoint(undefined);
+        }
+    }
 
-        // Add navigation control (the +/- zoom buttons)
-        map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    const onToggleHover = (cursor: string) => {
+        if (mapboxMap) {
+            mapboxMap.getCanvas().style.cursor = cursor;
+        }
+    }
 
-        map.on('move', () => {
-            setLng(+map.getCenter().lng.toFixed(4));
-            setLat(+map.getCenter().lat.toFixed(4));
-            setZoom(+map.getZoom().toFixed(2));
-        });
+    const markerClick = (stopPoint: StopPoint) => {
+        setSelectedStopPoint(stopPoint);
+        setLng(stopPoint.longitude);
+        setLat(stopPoint.latitude);
+        setZoom(14);
+    }
 
-        // Clean up on unmount
-        return () => map.remove();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    const stopPoints = useQuery<StopPoint[], Error>('stopPoints', getAllStopPoints);
 
     return (
-        <div>
-            <div className='sidebarStyle'>
-                <div>
-                    Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-                </div>
-            </div>
-            <div className='map-container' ref={mapContainerRef} />
-        </div>
+        <Mapbox className='map-container'
+                /* eslint-disable-next-line react/style-prop-object */
+                style='mapbox://styles/mapbox/streets-v11'
+                center={[lng, lat]}
+                zoom={[zoom]}
+                onDrag={onDrag}
+                onStyleLoad={(map) => {
+                    setMapboxMap(map);
+                }}
+                flyToOptions={flyToOptions}
+        >
+            <PositionControl />
+            <ZoomControl/>
+            <RotationControl/>
+            <ScaleControl style={{marginBottom: "15px"}}/>
+            <Layer type="symbol" layout={{ "icon-image": ["get", "network"] }}>
+                {stopPoints.data != null && stopPoints.data.map(stopPoint =>
+                    <Feature key={stopPoint.idStopPoint}
+                             onClick={markerClick.bind(this, stopPoint)}
+                             onMouseEnter={onToggleHover.bind(this, 'pointer')}
+                             onMouseLeave={onToggleHover.bind(this, '')}
+                             coordinates={[stopPoint.longitude, stopPoint.latitude]}
+                             properties={{network: "bus"}}
+                             />
+                )}
+            </Layer>
+            {selectedStopPoint && (
+                <Popup key={selectedStopPoint.idStopPoint}
+                       coordinates={[selectedStopPoint.longitude, selectedStopPoint.latitude]}
+                       style={StyledPopup}
+                >
+                    {selectedStopPoint.stopPointName}
+                </Popup>
+            )}
+        </Mapbox>
     );
-};
+}
 
 export default Map;
