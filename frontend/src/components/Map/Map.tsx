@@ -1,13 +1,20 @@
 import React, {useState} from 'react';
 import ReactMapboxGl, {Feature, Layer, Popup, RotationControl, ScaleControl, ZoomControl} from 'react-mapbox-gl';
-import MapboxGl, {FlyToOptions} from "mapbox-gl";
+import mapboxgl, {FlyToOptions} from "mapbox-gl";
 import 'mapbox-gl/dist/mapbox-gl.css';
 import {useQuery} from 'react-query';
 import {getAllStopPoints, StopPoint} from "../../services/backend";
 import PositionControl from './PositionControl';
 import './Map.css';
 
-MapboxGl.accessToken = 'pk.eyJ1IjoiZGVybWlzdGthZWZlciIsImEiOiJja2swYWQ0NHAwZm16Mm9rMmE3M3k2Zjk3In0.p8sQOMjTL_muHCN36uY9iA';
+// Webpack production build destroys the worker class. So load separately.
+if (process.env.NODE_ENV === 'production') {
+    // @ts-ignore
+    // eslint-disable-next-line import/no-webpack-loader-syntax
+    mapboxgl.workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
+}
+
+mapboxgl.accessToken = 'pk.eyJ1IjoiZGVybWlzdGthZWZlciIsImEiOiJja2swYWQ0NHAwZm16Mm9rMmE3M3k2Zjk3In0.p8sQOMjTL_muHCN36uY9iA';
 const Mapbox = ReactMapboxGl({
     accessToken: 'pk.eyJ1IjoiZGVybWlzdGthZWZlciIsImEiOiJja2swYWQ0NHAwZm16Mm9rMmE3M3k2Zjk3In0.p8sQOMjTL_muHCN36uY9iA'
 });
