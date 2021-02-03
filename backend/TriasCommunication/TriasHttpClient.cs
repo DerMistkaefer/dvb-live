@@ -20,6 +20,9 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
     {
         private readonly ILogger<TriasHttpClient> _logger;
         private readonly HttpClient _httpClient;
+        private readonly int maximumOpenConnections = 30;
+
+        private int _currenOpenConnections = 0;
 
         /// <inheritdoc cref="ITriasHttpClient"/>
         public event TriasEventHandlers.RequestFinishedEventHandler? RequestFinished;
@@ -45,9 +48,12 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             var trias = new Trias { Item = serviceRequest };
             var text = XmlSerialisation(trias);
 
+            await WaitUntilReadyForConnection();
+            _currenOpenConnections++;
             var response = await TriasRequestClientHandling(text).ConfigureAwait(false);
             OnRequestFinished(response);
             await EnsureSuccessTriasResponse(response).ConfigureAwait(false);
+            _currenOpenConnections--;
 
             await using var responseStream = await response.Content!.ReadAsStreamAsync().ConfigureAwait(false);
             var responseTrias = XmlDeserialisation<Trias>(responseStream);
@@ -55,6 +61,20 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             DeliveryPayloadStructure delevieryPayload = serviceDelievery.DeliveryPayload;
 
             return (TType)delevieryPayload.Item;
+        }
+
+        private async Task WaitUntilReadyForConnection()
+        {
+            while (true)
+            {
+                if (_currenOpenConnections >= maximumOpenConnections)
+                {
+                    await Task.Delay(500);
+                    continue;
+                }
+
+                break;
+            }
         }
 
         private async Task<HttpResponseMessage> TriasRequestClientHandling(string requestXmlString, int retryCount = 0)
@@ -70,25 +90,35 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
                 retryCount++;
                 return await TriasRequestClientHandling(requestXmlString, retryCount).ConfigureAwait(false);
             }
+            catch (HttpRequestException) when (retryCount < 5)
+            {
+                _logger.LogInformation("Retry Request");
+                retryCount++;
+                return await TriasRequestClientHandling(requestXmlString, retryCount).ConfigureAwait(false);
+            }
         }
 
         private static async Task EnsureSuccessTriasResponse(HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode)
             {
-                var requestString = await GetHttpContentAsStringSave(response.RequestMessage.Content).ConfigureAwait(false);
+                var requestString = await GetHttpContentAsStringSave(response.RequestMessage?.Content).ConfigureAwait(false);
                 var responeString = await GetHttpContentAsStringSave(response.Content).ConfigureAwait(false);
                 
-                var ex = new HttpRequestException($"Response status code does not indicate success: {(int)response.StatusCode} ({response.ReasonPhrase}).");
+                var ex = new HttpRequestException($"Response status code does not indicate success: {(int)response.StatusCode} ({response.ReasonPhrase}).", null, response.StatusCode);
                 ex.Data["Request"] = requestString;
                 ex.Data["Response"] = responeString;
                 throw ex;
             }
         }
 
-        private static async Task<string> GetHttpContentAsStringSave(HttpContent httpContent)
+        private static async Task<string> GetHttpContentAsStringSave(HttpContent? httpContent)
         {
             var httpContentString = "";
+            if (httpContent is null)
+            {
+                return httpContentString;
+            }
             try
             {
                 httpContentString = await httpContent.ReadAsStringAsync().ConfigureAwait(false);
