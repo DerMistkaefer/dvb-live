@@ -184,13 +184,13 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
             }
             catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.ServiceUnavailable)
             {
-                _logger.LogInformation("Trias ServiceUnavailable - {triasIdStopPoint}", triasIdStopPoint);
+                _logger.LogInformation("Trias ServiceUnavailable - {TriasIdStopPoint}", triasIdStopPoint);
             }
             catch (Exception ex)
             {
                 using (_logger.BeginScope(new Dictionary<string, object> { { "key", key }, { "triasIdStopPoint", triasIdStopPoint } }))
                 {
-                    _logger.LogError(ex, "Error in {class} - {function}", nameof(TripLogger), nameof(ObserveTripsFromStopPoint));
+                    _logger.LogError(ex, "Error in {Class} - {Function}", nameof(TripLogger), nameof(ObserveTripsFromStopPoint));
                 }
             }
         }

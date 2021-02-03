@@ -164,7 +164,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
                                     <StopPoint>
                                         <StopPointRef>de:14612:22</StopPointRef>
                                         <StopPointName>
-                                            <Text>Dresden, Maxstraﬂe (Bf Mitte)</Text>
+                                            <Text>Dresden, Maxstra√üe (Bf Mitte)</Text>
                                             <Language>de</Language>
                                         </StopPointName>
                                         <LocalityRef>14612000:1</LocalityRef>
