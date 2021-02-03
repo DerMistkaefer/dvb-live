@@ -15,7 +15,9 @@ namespace DerMistkaefer.DvbLive.Backend
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+#if !DEBUG
                     webBuilder.UseSentry();
+#endif
                 });
     }
 }
