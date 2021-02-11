@@ -25,7 +25,7 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^5.0.3",
-    "@testing-library/user-event": "^12.6.3",
+    "@testing-library/user-event": "^12.7.0",
     "@types/node-fetch": "^2.5.8",
     "jest-webgl-canvas-mock": "^0.2.3",
     "jsdom-worker": "^0.2.1",
