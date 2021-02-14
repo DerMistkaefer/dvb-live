@@ -4,7 +4,7 @@ import './App.css';
 import Map from '../Map/Map';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { persistQueryClient } from 'react-query/persistQueryClient-experimental'
-import { createLocalStoragePersistor  } from 'react-query/createLocalStoragePersistor-experimental';
+import { createLocalStoragePersistor } from 'react-query/createLocalStoragePersistor-experimental';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
 // BEGIN React Query Setup
