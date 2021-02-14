@@ -30,6 +30,7 @@ namespace DerMistkaefer.DvbLive.Backend
         {
             services.AddControllers()
                 .AddNewtonsoftJson(x => x.SerializerSettings.NullValueHandling = NullValueHandling.Ignore);
+            services.AddHealthChecks();
             services.AddTriasCommunication(Configuration);
             services.AddPublicTransportLines();
             services.AddDistributedMemoryCache();
@@ -71,6 +72,7 @@ namespace DerMistkaefer.DvbLive.Backend
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/hc");
             });
         }
     }
