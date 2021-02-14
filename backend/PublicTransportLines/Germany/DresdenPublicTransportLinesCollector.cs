@@ -19,7 +19,7 @@ namespace DerMistkaefer.DvbLive.GetPublicTransportLines.Germany
 
         public DresdenPublicTransportLinesCollector(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = new HttpClient();
+            _httpClient = httpClientFactory.CreateClient();
         }
 
         /// <inheritdoc cref="IPublicTransportLinesCollector"/>
