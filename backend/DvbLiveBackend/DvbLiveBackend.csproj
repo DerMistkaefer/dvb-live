@@ -31,6 +31,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.3">
       <PrivateAssets>all</PrivateAssets>
@@ -43,10 +44,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PublicTransportLines\PublicTransportLines.csproj" />
     <ProjectReference Include="..\TriasCommunication\TriasCommunication.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ApiStructure\Input\" />
+    <Folder Include="Migrations" />
   </ItemGroup>
 </Project>

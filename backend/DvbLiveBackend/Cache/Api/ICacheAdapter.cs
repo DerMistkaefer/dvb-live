@@ -1,7 +1,9 @@
-﻿using DerMistkaefer.DvbLive.Backend.Cache.Data;
+﻿using System.Collections;
+using DerMistkaefer.DvbLive.Backend.Cache.Data;
 using DerMistkaefer.DvbLive.TriasCommunication.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DerMistkaefer.DvbLive.GetPublicTransportLines.Data;
 
 namespace DerMistkaefer.DvbLive.Backend.Cache.Api
 {
@@ -20,5 +22,11 @@ namespace DerMistkaefer.DvbLive.Backend.Cache.Api
         CachedTrip UpdateTripCache(StopEventResult stopEvent);
 
         IEnumerable<CachedStopPoint> GetAllStopPoints();
+
+        /// <summary>
+        /// Get all Cached Public Transport Lines.
+        /// </summary>
+        /// <returns>List with all Public Transport Lines</returns>
+        IEnumerable<PublicTransportLine> GetAllLines();
     }
 }

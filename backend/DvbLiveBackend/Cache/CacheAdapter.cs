@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DerMistkaefer.DvbLive.GetPublicTransportLines;
+using DerMistkaefer.DvbLive.GetPublicTransportLines.Data;
 
 namespace DerMistkaefer.DvbLive.Backend.Cache
 {
@@ -18,19 +20,23 @@ namespace DerMistkaefer.DvbLive.Backend.Cache
     {
         private readonly ILogger<CacheAdapter> _logger;
         private readonly IDatabaseAdapter _databaseAdapter;
+        private readonly IPublicTransportLinesCollector _publicTransportLinesCollector;
         private ConcurrentDictionary<string, bool> _existsStopPoints;
         private ConcurrentDictionary<string, CachedStopPoint> _stopPointCache;
         private readonly ConcurrentDictionary<string, bool> _existsTrips;
         private readonly ConcurrentDictionary<string, CachedTrip> _tripCache;
+        private PublicTransportLine[] _linesCache;
 
-        public CacheAdapter(ILogger<CacheAdapter> logger, IDatabaseAdapter databaseAdapter)
+        public CacheAdapter(ILogger<CacheAdapter> logger, IDatabaseAdapter databaseAdapter, IPublicTransportLinesCollector publicTransportLinesCollector)
         {
             _logger = logger;
             _databaseAdapter = databaseAdapter;
+            _publicTransportLinesCollector = publicTransportLinesCollector;
             _existsStopPoints = new ConcurrentDictionary<string, bool>();
             _existsTrips = new ConcurrentDictionary<string, bool>();
             _stopPointCache = new ConcurrentDictionary<string, CachedStopPoint>();
             _tripCache = new ConcurrentDictionary<string, CachedTrip>();
+            _linesCache = Array.Empty<PublicTransportLine>();
             LoadCacheFromStorage().Wait();
         }
 
@@ -47,6 +53,8 @@ namespace DerMistkaefer.DvbLive.Backend.Cache
                 StopPointName = x.StopPointName
             }));
             _stopPointCache = new ConcurrentDictionary<string, CachedStopPoint>(istStopPointCache);
+            var dataLines = await _publicTransportLinesCollector.GetPublicTransportLines().ConfigureAwait(false);
+            _linesCache = dataLines.ToArray();
         }
 
         /// <inheritdoc cref="ICacheAdapter"/>
@@ -133,7 +141,11 @@ namespace DerMistkaefer.DvbLive.Backend.Cache
 
         /// <inheritdoc cref="ICacheAdapter"/>
         public IEnumerable<CachedStopPoint> GetAllStopPoints()
-            => _stopPointCache.Select(x => x.Value);
+            => _stopPointCache.Values;
+
+        /// <inheritdoc cref="ICacheAdapter"/>
+        public IEnumerable<PublicTransportLine> GetAllLines()
+            => _linesCache;
 
         private CachedTrip? GetTripCache(DateTime operatingDayRef, string journeyRef)
         {
