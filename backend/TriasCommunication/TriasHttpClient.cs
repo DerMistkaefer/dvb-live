@@ -22,7 +22,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         private readonly HttpClient _httpClient;
         private readonly int maximumOpenConnections = 30;
 
-        private int _currenOpenConnections = 0;
+        private int _currentOpenConnections = 0;
 
         /// <inheritdoc cref="ITriasHttpClient"/>
         public event TriasEventHandlers.RequestFinishedEventHandler? RequestFinished;
@@ -49,12 +49,18 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             var text = XmlSerialisation(trias);
 
             await WaitUntilReadyForConnection();
-            _currenOpenConnections++;
-            var response = await TriasRequestClientHandling(text).ConfigureAwait(false);
-            OnRequestFinished(response);
-            await EnsureSuccessTriasResponse(response).ConfigureAwait(false);
-            _currenOpenConnections--;
-
+            _currentOpenConnections++;
+            HttpResponseMessage? response = null;
+            try
+            {
+                response = await TriasRequestClientHandling(text).ConfigureAwait(false);
+                OnRequestFinished(response);
+                await EnsureSuccessTriasResponse(response).ConfigureAwait(false);
+            }
+            finally
+            {
+                _currentOpenConnections--;
+            }
             await using var responseStream = await response.Content!.ReadAsStreamAsync().ConfigureAwait(false);
             var responseTrias = XmlDeserialisation<Trias>(responseStream);
             var serviceDelievery = (ServiceDeliveryStructure1)responseTrias.Item;
@@ -67,7 +73,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         {
             while (true)
             {
-                if (_currenOpenConnections >= maximumOpenConnections)
+                if (_currentOpenConnections >= maximumOpenConnections)
                 {
                     await Task.Delay(500);
                     continue;
