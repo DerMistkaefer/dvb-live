@@ -3,7 +3,8 @@ import logo from '../../assets/logo.svg';
 import './App.css';
 import Map from '../Map/Map';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { persistWithLocalStorage } from 'react-query/persist-localstorage-experimental';
+import { persistQueryClient } from 'react-query/persistQueryClient-experimental'
+import { createLocalStoragePersistor  } from 'react-query/createLocalStoragePersistor-experimental';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
 // BEGIN React Query Setup
@@ -14,7 +15,12 @@ const queryClient = new QueryClient({
         }
     }
 });
-persistWithLocalStorage(queryClient);
+const localStoragePersistor = createLocalStoragePersistor()
+
+persistQueryClient({
+    queryClient,
+    persistor: localStoragePersistor,
+});
 // END React Query Setup
 
 function App() {

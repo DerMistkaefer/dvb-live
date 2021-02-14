@@ -1,11 +1,20 @@
 import React, {useState} from 'react';
-import ReactMapboxGl, {Feature, Layer, Popup, RotationControl, ScaleControl, ZoomControl} from 'react-mapbox-gl';
+import ReactMapboxGl, {
+    Feature, GeoJSONLayer,
+    Layer,
+    Popup,
+    RotationControl,
+    ScaleControl,
+    Source,
+    ZoomControl
+} from 'react-mapbox-gl';
 import mapboxgl, {FlyToOptions} from "mapbox-gl";
 import 'mapbox-gl/dist/mapbox-gl.css';
 import {useQuery} from 'react-query';
-import {getAllStopPoints, StopPoint} from "../../services/backend";
+import {getAllPublicTransportLines, getAllStopPoints, PublicTransportLine, StopPoint} from "../../services/backend";
 import PositionControl from './PositionControl';
 import './Map.css';
+import {from} from "linq-to-typescript";
 
 // Webpack production build destroys the worker class. So load separately.
 if (process.env.NODE_ENV === 'production') {
@@ -56,6 +65,15 @@ const Map = () => {
     }
 
     const stopPoints = useQuery<StopPoint[], Error>('stopPoints', getAllStopPoints);
+    const lines = useQuery<PublicTransportLine[], Error>('publicTransportLines', getAllPublicTransportLines);
+    let linesFeatureCollection: GeoJSON.FeatureCollection<GeoJSON.MultiLineString> | null = null;
+    if (lines.data != null)
+    {
+        linesFeatureCollection = {
+            type: "FeatureCollection",
+            features: from(lines.data).select(x => x.line).toArray()
+        };
+    }
 
     return (
         <Mapbox className='map-container'
@@ -69,10 +87,22 @@ const Map = () => {
                 }}
                 flyToOptions={flyToOptions}
         >
+            {/* Controls */}
             <PositionControl />
             <ZoomControl/>
             <RotationControl/>
             <ScaleControl style={{marginBottom: "15px"}}/>
+            {/* Lines */}
+            <GeoJSONLayer data={linesFeatureCollection}
+                          lineLayout={{
+                              "visibility": "visible"
+                          }}
+                          linePaint={{
+                              "line-width": 3,
+                              "line-color": "#00f8ff"
+                          }}
+            />
+            {/* StopPoints */}
             <Layer type="symbol" layout={{ "icon-image": ["get", "network"] }}>
                 {stopPoints.data != null && stopPoints.data.map(stopPoint =>
                     <Feature key={stopPoint.idStopPoint}
