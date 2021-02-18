@@ -1,5 +1,6 @@
 ﻿using DerMistkaefer.DvbLive.TriasCommunication.Data;
 using System;
+using System.Linq;
 
 namespace DerMistkaefer.DvbLive.Backend.Cache.Data
 {
@@ -53,6 +54,42 @@ namespace DerMistkaefer.DvbLive.Backend.Cache.Data
         /// </summary>
         public CachedTripStopType Type { get; }
 
+        /// <summary>
+        /// Trias Id of this Stop Point.
+        /// </summary>
+        internal string TriasIdStopPoint
+        {
+            get
+            {
+                var separator = ':';
+                var countColon = StopPointRef.Count(c => c == separator);
+                if (countColon >= 3)
+                {
+                    return string.Join(separator, StopPointRef.Split(separator, 4)[..3]);
+                }
+                return StopPointRef;
+            }
+        }
+
+        /// <summary>
+        /// Calculation Time for the Departure
+        /// </summary>
+        internal DateTime? ArrivalCalculationTime => ArrivalEstimatedTime ?? ArrivalTimeTableTime; 
+        
+        /// <summary>
+        /// Calculation Time for the Departure
+        /// </summary>
+        internal DateTime? DepartureCalculationTime => DepartureEstimatedTime ?? DepartureTimeTableTime;
+
+        /// <summary>
+        /// For Testing! Will change with loading of cache from database or distributed caching with redis.
+        /// </summary>
+        /// <param name="stopPointRef"></param>
+        internal CachedTripStop(string stopPointRef)
+        {
+            StopPointRef = stopPointRef;
+        }
+        
         internal CachedTripStop(StopEventCall call)
         {
             StopPointRef = call.StopPointRef;

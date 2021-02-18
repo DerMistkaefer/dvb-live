@@ -147,6 +147,14 @@ namespace DerMistkaefer.DvbLive.Backend.Cache
         public IEnumerable<PublicTransportLine> GetAllLines()
             => _linesCache;
 
+        /// <inheritdoc cref="ICacheAdapter"/>
+        public IEnumerable<CachedTrip> GetAllActiveTrips() 
+            => _tripCache.Values;
+
+        /// <inheritdoc cref="ICacheAdapter"/>
+        public CachedStopPoint GetStopPointById(string triasIdStopPoint)
+            => _stopPointCache[triasIdStopPoint];
+
         private CachedTrip? GetTripCache(DateTime operatingDayRef, string journeyRef)
         {
             return _tripCache.Values.FirstOrDefault(x => x.OperatingDayRef == operatingDayRef && x.JourneyRef == journeyRef);
