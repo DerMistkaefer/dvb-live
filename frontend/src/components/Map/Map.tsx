@@ -5,7 +5,6 @@ import ReactMapboxGl, {
     Popup,
     RotationControl,
     ScaleControl,
-    Source,
     ZoomControl
 } from 'react-mapbox-gl';
 import mapboxgl, {FlyToOptions} from "mapbox-gl";

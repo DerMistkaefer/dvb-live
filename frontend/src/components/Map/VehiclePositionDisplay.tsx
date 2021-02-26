@@ -5,10 +5,8 @@ import VehiclePositionCalculator from "./VehiclePositionCalculator";
 import {from} from "linq-to-typescript";
 import {useQuery} from "react-query";
 import {
-    getAllPublicTransportLines,
     getAllStopPoints,
     getLiveVehiclePositionData,
-    PublicTransportLine,
     StopPoint, VehiclePosition
 } from "../../services/backend";
 import {UseQueryResult} from "react-query/types/react/types";
