@@ -28,5 +28,18 @@ namespace DerMistkaefer.DvbLive.Backend.Cache.Api
         /// </summary>
         /// <returns>List with all Public Transport Lines</returns>
         IEnumerable<PublicTransportLine> GetAllLines();
+
+        /// <summary>
+        /// Get all active Trips.
+        /// </summary>
+        /// <returns>List with all active Trips</returns>
+        IEnumerable<CachedTrip> GetAllActiveTrips();
+
+        /// <summary>
+        /// Get an Cached Stop Point by its Trias Stop Point Reference. 
+        /// </summary>
+        /// <param name="triasIdStopPoint">Reference of this Trias Stop Point</param>
+        /// <returns>Cached Data from this Stop Point</returns>
+        CachedStopPoint GetStopPointById(string triasIdStopPoint);
     }
 }
