@@ -148,8 +148,12 @@ namespace DerMistkaefer.DvbLive.Backend.Cache
             => _linesCache;
 
         /// <inheritdoc cref="ICacheAdapter"/>
-        public IEnumerable<CachedTrip> GetAllActiveTrips() 
-            => _tripCache.Values;
+        public IEnumerable<CachedTrip> GetAllActiveTrips()
+        {
+            var tripCacheValues = _tripCache.Values;
+            
+            return tripCacheValues.Where(x => x.Stops.LastOrDefault()?.ArrivalCalculationTime > DateTime.UtcNow);
+        }
 
         /// <inheritdoc cref="ICacheAdapter"/>
         public CachedStopPoint GetStopPointById(string triasIdStopPoint)

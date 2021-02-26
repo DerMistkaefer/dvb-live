@@ -1,4 +1,5 @@
-﻿using GeoJSON.Net.Geometry;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DerMistkaefer.DvbLive.Backend.ApiStructure.Output
 {
@@ -8,8 +9,13 @@ namespace DerMistkaefer.DvbLive.Backend.ApiStructure.Output
     public class VehiclePosition
     {
         /// <summary>
-        /// Current Vehicle Position
+        /// Unique Id of this Trip.
         /// </summary>
-        public Position Position { get; set; } = new Position(0, 0);
+        public string IdTrip { get; set; } = "";
+
+        /// <summary>
+        /// Active Stops of this Trip.
+        /// </summary>
+        public IEnumerable<VehiclePositionTripStop> Stops { get; set; } = Array.Empty<VehiclePositionTripStop>();
     }
 }
