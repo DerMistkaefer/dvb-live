@@ -15,6 +15,7 @@ import {getAllPublicTransportLines, getAllStopPoints, PublicTransportLine, StopP
 import PositionControl from './PositionControl';
 import './Map.css';
 import {from} from "linq-to-typescript";
+import VehiclePositionDisplay from "./VehiclePositionDisplay";
 
 // Webpack production build destroys the worker class. So load separately.
 if (process.env.NODE_ENV === 'production') {
@@ -122,6 +123,8 @@ const Map = () => {
                     {selectedStopPoint.stopPointName}
                 </Popup>
             )}
+            {/* Live Vehicles */}
+            <VehiclePositionDisplay/>
         </Mapbox>
     );
 }
