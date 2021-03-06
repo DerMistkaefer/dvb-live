@@ -52,13 +52,13 @@ class VehiclePositionDisplay extends React.Component<Props, State> {
             <div>
                 <Query keyName="stopPoints" fn={getAllStopPoints}>
                     {({data}: UseQueryResult<StopPoint[]>) => {
-                        data != undefined && this.calculator.setStopPoints(data);
+                        data !== undefined && this.calculator.setStopPoints(data);
                         return "";
                     } }
                 </Query>
                 <Query keyName="liveVehiclePositions" fn={getLiveVehiclePositionData}>
                     {({data}: UseQueryResult<VehiclePosition[]>) => {
-                        this.liveVehiclePositionData = (data != null ? from(data).toArray() : []);
+                        this.liveVehiclePositionData = (data !== undefined ? from(data).toArray() : []);
                         return "";
                     } }
                 </Query>
@@ -69,7 +69,7 @@ class VehiclePositionDisplay extends React.Component<Props, State> {
     private updateVehiclePosition(timestamp: number) {
         const map = this.props.map;
         const positions = this.calculator.getCurrentVehiclePositions(this.liveVehiclePositionData);
-        const deleteCache = from(Object.keys(this.markerCache)).where(x => !from(positions).any(y => y.idTrip == x));
+        const deleteCache = from(Object.keys(this.markerCache)).where(x => !from(positions).any(y => y.idTrip === x));
 
         deleteCache.toArray().forEach(x => delete this.markerCache[x]);
 

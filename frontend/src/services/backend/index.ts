@@ -10,7 +10,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development')
     try {
         const devUrl = "http://localhost:11744";
         axios.get(`${devUrl}/hc`).then(response => {
-                if (response.status == 200) {
+                if (response.status === 200) {
                     baseUrl = devUrl;
                 }
         });
@@ -34,9 +34,9 @@ export async function getAllStopPoints(): Promise<StopPoint[]>
 
 export async function getLiveVehiclePositionData(): Promise<VehiclePosition[]>
 {
-    const resspone = await axios.get<VehiclePosition[]>(`${baseUrl}/live/vehicle`);
+    const response = await axios.get<VehiclePosition[]>(`${baseUrl}/live/vehicle`);
 
-    return resspone.data;
+    return response.data;
 }
 
 export type { PublicTransportLine, StopPoint, VehiclePosition };
