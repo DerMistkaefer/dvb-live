@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+    
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <Nullable>Enable</Nullable>
         <IsPackable>false</IsPackable>
-        <RootNamespace>DerMistkaefer.DvbLive.PublicTransportLines.IntegrationTests</RootNamespace>
-        <AssemblyName>DerMistkaefer.DvbLive.PublicTransportLines.IntegrationTests</AssemblyName>
+        <RootNamespace>DerMistkaefer.DvbLive.Backend.UnitTests</RootNamespace>
+        <AssemblyName>DerMistkaefer.DvbLive.Backend.UnitTests</AssemblyName>
         <Authors>DerMistkaefer</Authors>
         <Version>0.0.1</Version>
-        <Description>PublicTransportLines - Integration Tests</Description>
+        <Description>DvbLiveBackend - Unit Tests</Description>
         <Copyright>2021 DerMistkaefer</Copyright>
         <NeutralLanguage>en</NeutralLanguage>
     </PropertyGroup>
@@ -26,15 +26,15 @@
         <PackageReference Include="FluentAssertions" Version="5.10.3" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
-        <PackageReference Include="Moq" Version="4.16.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+        <PackageReference Include="Moq" Version="4.16.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
-        <PackageReference Include="coverlet.collector" Version="3.0.3" />
+        <PackageReference Include="coverlet.collector" Version="3.0.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\PublicTransportLines\PublicTransportLines.csproj" />
+        <ProjectReference Include="..\DvbLiveBackend\DvbLiveBackend.csproj" />
     </ItemGroup>
 
 </Project>

@@ -16,7 +16,7 @@
         public string StopPointName { get; set; } = "";
 
         /// <summary>
-        /// Longtitude
+        /// Longitude
         /// </summary>
         public decimal Longitude { get; set; }
 

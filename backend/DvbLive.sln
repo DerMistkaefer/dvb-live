@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicTransportLines", "Pub
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PublicTransportLines.IntegrationTests", "PublicTransportLines.IntegrationTests\PublicTransportLines.IntegrationTests.csproj", "{F4623DE1-A3C1-48F2-A8F2-436FBB3FD98F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DvbLiveBackend.UnitTests", "DvbLiveBackend.UnitTests\DvbLiveBackend.UnitTests.csproj", "{A32DC135-CD2C-4DED-842D-E5638E063D61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{F4623DE1-A3C1-48F2-A8F2-436FBB3FD98F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4623DE1-A3C1-48F2-A8F2-436FBB3FD98F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4623DE1-A3C1-48F2-A8F2-436FBB3FD98F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A32DC135-CD2C-4DED-842D-E5638E063D61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A32DC135-CD2C-4DED-842D-E5638E063D61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A32DC135-CD2C-4DED-842D-E5638E063D61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A32DC135-CD2C-4DED-842D-E5638E063D61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

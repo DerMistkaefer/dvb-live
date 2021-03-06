@@ -1,6 +1,7 @@
 import axios from "axios";
 import {PublicTransportLine} from "./output/PublicTransportLine";
 import {StopPoint} from "./output/StopPoint";
+import { VehiclePosition } from "./output/VehiclePosition";
 
 let baseUrl = "https://dvb-live-backend.dermistkaefer.de";
 
@@ -31,4 +32,11 @@ export async function getAllStopPoints(): Promise<StopPoint[]>
     return response.data;
 }
 
-export type { PublicTransportLine, StopPoint };
+export async function getLiveVehiclePositionData(): Promise<VehiclePosition[]>
+{
+    const resspone = await axios.get<VehiclePosition[]>(`${baseUrl}/live/vehicle`);
+
+    return resspone.data;
+}
+
+export type { PublicTransportLine, StopPoint, VehiclePosition };
