@@ -10,17 +10,17 @@ namespace DerMistkaefer.DvbLive.IPGeolocation
     public interface IIpGeolocation
     {
         /// <summary>
-        /// Geolocate the Current IpAdress.
+        /// Geolocate the Current IpAddress.
         /// </summary>
-        /// <param name="httpClient">HttpClient with them the CurrentIpAdress lockup will be excecuted</param>
-        /// <returns>Basic String Respone from the Result (Continet - Region - City)</returns>
-        Task<string> GeolocateOwnAdress(HttpClient? httpClient = null);
+        /// <param name="httpClient">HttpClient with them the CurrentIpAddress lockup will be executed</param>
+        /// <returns>Basic String Response from the Result (Continent - Region - City)</returns>
+        Task<string> GeolocateOwnAddress(HttpClient? httpClient = null);
 
         /// <summary>
-        /// Geolocate an IpAdress.
+        /// Geolocate an IpAddress.
         /// </summary>
         /// <param name="ipAddress"></param>
-        /// <returns>Basic String Respone from the Result (Continet - Region - City)</returns>
-        Task<string> GeolocateAdress(IPAddress ipAddress);
+        /// <returns>Basic String Response from the Result (Continent - Region - City)</returns>
+        Task<string> GeolocateAddress(IPAddress ipAddress);
     }
 }

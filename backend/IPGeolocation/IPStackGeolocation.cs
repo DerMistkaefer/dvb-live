@@ -34,7 +34,7 @@ namespace DerMistkaefer.DvbLive.IPGeolocation
         }
         
         /// <inheritdoc cref="IIpGeolocation"/>
-        public async Task<string> GeolocateOwnAdress(HttpClient? httpClient = null)
+        public async Task<string> GeolocateOwnAddress(HttpClient? httpClient = null)
         {
             var checkClient = httpClient ?? DefaultHttpClient;
             var ipCheckUri = new Uri($"http://api.ipstack.com/check?access_key={_accessKey}&format=1");
@@ -46,7 +46,7 @@ namespace DerMistkaefer.DvbLive.IPGeolocation
         }
 
         /// <inheritdoc cref="IIpGeolocation"/>
-        public async Task<string> GeolocateAdress(IPAddress ipAddress)
+        public async Task<string> GeolocateAddress(IPAddress ipAddress)
         {
             var ipCheckUri = new Uri($"http://api.ipstack.com/{ipAddress}?access_key={_accessKey}&format=1");
             var response = await DefaultHttpClient.PostAsync(ipCheckUri, null).ConfigureAwait(false);
@@ -54,26 +54,6 @@ namespace DerMistkaefer.DvbLive.IPGeolocation
             var ipStackResponse = await response.Content.ReadAsAsync<IpStackResponse>().ConfigureAwait(false);
 
             return $"{ipStackResponse.ContinentName} - {ipStackResponse.RegionName} - {ipStackResponse.City}";
-        }
-
-        private async Task<IpStackResponse?> BaseGeolocateRequest(HttpClient httpClient, Uri uri)
-        {
-            var response = await DefaultHttpClient.PostAsync(uri, null).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-            try
-            {
-                return await response.Content.ReadAsAsync<IpStackResponse>().ConfigureAwait(false);
-            }
-            catch (JsonSerializationException ex)
-            {
-                var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                using (_logger.BeginScope(new Dictionary<string, object> {{"requestUri", uri}, { "response", responseString}}))
-                {
-                    _logger.LogError(ex, "Error converting IpGeolocation Response.");
-                }
-                
-                return null;   
-            }
         }
     }
 }

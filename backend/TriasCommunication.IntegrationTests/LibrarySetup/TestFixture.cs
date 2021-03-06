@@ -8,7 +8,7 @@ using System.Threading;
 namespace DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests.LibrarySetup
 {
     /// <summary>
-    /// Fixture that Build the Serivce Provider for all Integration Tests
+    /// Fixture that Build the Service Provider for all Integration Tests
     /// </summary>
     public class TestFixture
     {

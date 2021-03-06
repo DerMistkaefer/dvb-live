@@ -1,7 +1,7 @@
 ﻿namespace DerMistkaefer.DvbLive.IPGeolocation.Configuration
 {
     /// <summary>
-    /// Main Configuration for the IpGeolocation libbriary.
+    /// Main Configuration for the IpGeolocation library.
     /// </summary>
     public class IpGeolocationConfiguration
     {

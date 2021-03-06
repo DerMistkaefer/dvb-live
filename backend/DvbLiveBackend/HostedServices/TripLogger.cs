@@ -32,7 +32,7 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
         /// <summary>
         /// Load all dependencies in the Hosted Service.
         /// </summary>
-        /// <param name="triasCommunicator">Trias Commincatior service</param>
+        /// <param name="triasCommunicator">Trias Communicator service</param>
         /// <param name="cacheAdapter">Adapter for the Cache</param>
         /// <param name="logger">Service to log events</param>
         public TripLogger(
@@ -50,7 +50,7 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
         /// <inheritdoc cref="IHostedService"/>
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Trip Logger Service is starting.");
+            _logger.LogInformation("Trip Logger Service starting");
             _timer = new Timer(DoLogging, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
 
             return Task.CompletedTask;
@@ -59,7 +59,7 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
         /// <inheritdoc cref="IHostedService"/>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Trip Logger Service is stopping.");
+            _logger.LogInformation("Trip Logger Service stopping");
 
             _timer?.Change(Timeout.Infinite, 0);
 
@@ -80,7 +80,7 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in {class}", nameof(TripLogger));
+                _logger.LogError(ex, "Error in {Class}", nameof(TripLogger));
             }
         }
 
@@ -98,11 +98,11 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
             stopWatch.Stop();
             var ts = stopWatch.Elapsed;
             var elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
-            _logger.LogInformation("Logging - RunTime " + elapsedTime);
-            PrintTriasCommunicatorUssage(ts.TotalSeconds);
+            _logger.LogInformation("Logging - RunTime {ElapsedTime}", elapsedTime);
+            PrintTriasCommunicatorUsage(ts.TotalSeconds);
         }
 
-        private void PrintTriasCommunicatorUssage(double totalSeconds)
+        private void PrintTriasCommunicatorUsage(double totalSeconds)
         {
             var apiRequestsCountRun = _runApiRequestCount;
             var downloadedKbRun = _runDownloadedBytes / 1000;
@@ -144,9 +144,9 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
             while (queryStopPoints.Count != 0)
             {
                 var tasks = new List<Task>();
-                foreach (var fahrtIdStop in queryStopPoints)
+                foreach (var triasIdStopPoint in queryStopPoints)
                 {
-                    tasks.Add(ObserveTripsFromStopPoint(key, fahrtIdStop));
+                    tasks.Add(ObserveTripsFromStopPoint(key, triasIdStopPoint));
                     key++;
                 }
                 Task.WhenAll(tasks).Wait();
@@ -157,10 +157,10 @@ namespace DerMistkaefer.DvbLive.Backend.HostedServices
 
         private List<string> GetQueryStopPointsObserve()
         {
-            var cacheHaltestellenNextRun = _cacheAdapter.GetStopPointIds().Where(x => !_runStopPointsProcessed.Contains(x)).ToList();
-            _runStopPointsProcessed.AddRange(cacheHaltestellenNextRun);
+            var cacheStopPointsNextRun = _cacheAdapter.GetStopPointIds().Where(x => !_runStopPointsProcessed.Contains(x)).ToList();
+            _runStopPointsProcessed.AddRange(cacheStopPointsNextRun);
 
-            return cacheHaltestellenNextRun;
+            return cacheStopPointsNextRun;
         }
 
         private async Task ObserveTripsFromStopPoint(int key, string triasIdStopPoint)

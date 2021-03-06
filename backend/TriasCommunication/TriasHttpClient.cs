@@ -20,12 +20,12 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
     {
         private readonly ILogger<TriasHttpClient> _logger;
         private readonly HttpClient _httpClient;
-        private readonly int maximumOpenConnections = 30;
+        private const int MaximumOpenConnections = 30;
 
         private int _currentOpenConnections = 0;
 
         /// <inheritdoc cref="ITriasHttpClient"/>
-        public event TriasEventHandlers.RequestFinishedEventHandler? RequestFinished;
+        public event EventHandler<RequestFinishedEventArgs>? RequestFinished;
 
         public TriasHttpClient(IHttpClientFactory httpClientFactory, IOptions<TriasConfiguration> triasConfiguration, ILogger<TriasHttpClient> logger)
         {
@@ -48,7 +48,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             var trias = new Trias { Item = serviceRequest };
             var text = XmlSerialisation(trias);
 
-            await WaitUntilReadyForConnection();
+            await WaitUntilReadyForConnection().ConfigureAwait(false);
             _currentOpenConnections++;
             HttpResponseMessage? response = null;
             try
@@ -62,20 +62,20 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
                 _currentOpenConnections--;
             }
             await using var responseStream = await response.Content!.ReadAsStreamAsync().ConfigureAwait(false);
-            var responseTrias = XmlDeserialisation<Trias>(responseStream);
-            var serviceDelievery = (ServiceDeliveryStructure1)responseTrias.Item;
-            DeliveryPayloadStructure delevieryPayload = serviceDelievery.DeliveryPayload;
+            var responseTrias = XmlDeserialization<Trias>(responseStream);
+            var serviceDelivery = (ServiceDeliveryStructure1)responseTrias.Item;
+            DeliveryPayloadStructure deliveryPayload = serviceDelivery.DeliveryPayload;
 
-            return (TType)delevieryPayload.Item;
+            return (TType)deliveryPayload.Item;
         }
 
         private async Task WaitUntilReadyForConnection()
         {
             while (true)
             {
-                if (_currentOpenConnections >= maximumOpenConnections)
+                if (_currentOpenConnections >= MaximumOpenConnections)
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(500).ConfigureAwait(false);
                     continue;
                 }
 
@@ -88,17 +88,19 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             try
             {
                 using var content = new StringContent(requestXmlString, Encoding.UTF8, "text/xml");
-                return await _httpClient.PostAsync("", content).ConfigureAwait(false);
+                return await _httpClient.PostAsync((Uri?) null, content).ConfigureAwait(false);
             }
             catch (TaskCanceledException) when (retryCount < 5)
             {
                 _logger.LogInformation("Retry Request");
+                await Task.Delay(500).ConfigureAwait(false);
                 retryCount++;
                 return await TriasRequestClientHandling(requestXmlString, retryCount).ConfigureAwait(false);
             }
             catch (HttpRequestException) when (retryCount < 5)
             {
                 _logger.LogInformation("Retry Request");
+                await Task.Delay(500).ConfigureAwait(false);
                 retryCount++;
                 return await TriasRequestClientHandling(requestXmlString, retryCount).ConfigureAwait(false);
             }
@@ -109,11 +111,11 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             if (!response.IsSuccessStatusCode)
             {
                 var requestString = await GetHttpContentAsStringSave(response.RequestMessage?.Content).ConfigureAwait(false);
-                var responeString = await GetHttpContentAsStringSave(response.Content).ConfigureAwait(false);
+                var responseString = await GetHttpContentAsStringSave(response.Content).ConfigureAwait(false);
                 
                 var ex = new HttpRequestException($"Response status code does not indicate success: {(int)response.StatusCode} ({response.ReasonPhrase}).", null, response.StatusCode);
                 ex.Data["Request"] = requestString;
-                ex.Data["Response"] = responeString;
+                ex.Data["Response"] = responseString;
                 throw ex;
             }
         }
@@ -146,7 +148,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             return textWriter.ToString();
         }
 
-        private static TType XmlDeserialisation<TType>(Stream data)
+        private static TType XmlDeserialization<TType>(Stream data)
         {
             using var xmlReader = new XmlTextReader(data)
             {

@@ -1,4 +1,5 @@
-﻿using DerMistkaefer.DvbLive.TriasCommunication.Data;
+﻿using System;
+using DerMistkaefer.DvbLive.TriasCommunication.Data;
 using System.Threading.Tasks;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication
@@ -11,7 +12,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         /// <summary>
         /// Event Handler that will be triggered when a request is finished.
         /// </summary>
-        public event TriasEventHandlers.RequestFinishedEventHandler? RequestFinished;
+        public event EventHandler<RequestFinishedEventArgs>? RequestFinished;
 
         /// <summary>
         /// Base Call to the Trias-Api.

@@ -1,4 +1,5 @@
-﻿using DerMistkaefer.DvbLive.TriasCommunication.Data;
+﻿using System;
+using DerMistkaefer.DvbLive.TriasCommunication.Data;
 using DerMistkaefer.DvbLive.TriasCommunication.Exceptions;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         public long TotalDownloadedBytes { get; private set; }
 
         /// <inheritdoc cref="ITriasCommunicator" />
-        public event TriasEventHandlers.RequestFinishedEventHandler? RequestFinished;
+        public event EventHandler<RequestFinishedEventArgs>? RequestFinished;
 
         /// <inheritdoc cref="ITriasCommunicator" />
         public async Task<LocationInformationStopResponse> LocationInformationStopRequest(string idStopPoint)
@@ -107,12 +108,12 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             var ex = new StopEventException($"No stop events could be collected. {string.Join('-', errorCodes)}");
             using (_logger.BeginScope(new Dictionary<string, object> { { "idStopPoint", idStopPoint }, { "response", response } }))
             {
-                _logger.LogError(ex, "{idStopPoint} - No stop events could be collected.", idStopPoint);
+                _logger.LogError(ex, "{IdStopPoint} - No stop events could be collected.", idStopPoint);
             }
             return new StopEventResponse(idStopPoint, new List<StopEventResult>());
         }
 
-        private void OnClientRequestFinished(object sender, RequestFinishedEventArgs e)
+        private void OnClientRequestFinished(object? sender, RequestFinishedEventArgs e)
         {
             TotalApiRequestsCount++;
             TotalDownloadedBytes += e.DownloadedBytes;

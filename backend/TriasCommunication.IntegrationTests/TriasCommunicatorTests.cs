@@ -16,7 +16,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests
         private readonly ITriasCommunicator _communicator;
 
         /// <summary>
-        /// Initalize the Trias Communicator
+        /// Initialize the Trias Communicator
         /// </summary>
         public TriasCommunicatorTests(TestFixture testFixture)
         {

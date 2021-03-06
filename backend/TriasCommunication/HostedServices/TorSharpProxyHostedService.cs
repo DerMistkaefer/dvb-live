@@ -57,10 +57,10 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.HostedServices
             _timer = new Timer(SwitchToNewIdentity, null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
         }
 
-        private void SwitchToNewIdentity(object state)
+        private void SwitchToNewIdentity(object? state)
             => SwitchToNewIdentityAsync(state).Wait();
         
-        private async Task SwitchToNewIdentityAsync(object state)
+        private async Task SwitchToNewIdentityAsync(object? _)
         {
             await _proxy.GetNewIdentityAsync().ConfigureAwait(false);
             await CheckIdentity().ConfigureAwait(false);
@@ -82,7 +82,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.HostedServices
 
         private async Task CheckIdentity()
         {
-            var ipResponse = await _ipGeolocation.GeolocateOwnAdress(_proxyHttpClient).ConfigureAwait(false);
+            var ipResponse = await _ipGeolocation.GeolocateOwnAddress(_proxyHttpClient).ConfigureAwait(false);
             _logger.LogInformation($"New TriasCommincation IP - {ipResponse}");
         }
     }

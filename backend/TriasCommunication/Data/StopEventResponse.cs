@@ -151,7 +151,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Data
         public string StopPointName { get; }
 
         /// <summary>
-        /// Sequenz number of the stop point in the track.
+        /// Sequence number of the stop point in the track.
         /// </summary>
         public int StopSeqNumber { get; }
 

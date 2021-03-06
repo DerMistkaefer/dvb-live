@@ -13,7 +13,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Data
         public long DownloadedBytes { get; }
 
         /// <summary>
-        /// Initalize new Request Finished Event Args
+        /// Initialize new Request Finished Event Args
         /// </summary>
         /// <param name="downloadedBytes">Downloaded Bytes from the Request</param>
         internal RequestFinishedEventArgs(long downloadedBytes)
