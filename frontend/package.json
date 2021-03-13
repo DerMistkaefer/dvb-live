@@ -28,6 +28,7 @@
     "@testing-library/react-hooks": "^5.1.0",
     "@testing-library/user-event": "^12.8.1",
     "@types/node-fetch": "^2.5.8",
+    "jest-performance": "^2.1.0",
     "jest-webgl-canvas-mock": "^0.2.3",
     "jsdom-worker": "^0.2.1",
     "mitt": "^2.1.0",
@@ -38,7 +39,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test"
+    "test": "react-scripts test && npm run test:perf",
+    "test:perf": "jest --config ./jest.perf.config.js"
   },
   "eslintConfig": {
     "extends": "react-app"
