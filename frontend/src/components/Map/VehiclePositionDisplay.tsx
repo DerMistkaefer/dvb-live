@@ -32,6 +32,7 @@ class VehiclePositionDisplay extends React.Component<Props, State> {
     private markerCache: { [idTrip: string]: mapboxgl.Marker } = {};
     private calculator: VehiclePositionCalculator;
     private liveVehiclePositionData: VehiclePosition[] = [];
+    private framesPerSecond = 24; // 24 is use in most films. https://en.wikipedia.org/wiki/Frame_rate
 
     constructor(props: Props) {
         super(props);
@@ -85,7 +86,9 @@ class VehiclePositionDisplay extends React.Component<Props, State> {
         });
 
         if (this.enable) {
-            requestAnimationFrame((timestamp) => this.updateVehiclePosition(timestamp));
+            setTimeout(() => {
+                requestAnimationFrame((timestamp) => this.updateVehiclePosition(timestamp));
+            }, 1000 / this.framesPerSecond);
         }
     }
 }
