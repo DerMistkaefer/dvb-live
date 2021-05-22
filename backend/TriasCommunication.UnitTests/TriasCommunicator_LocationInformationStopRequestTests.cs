@@ -80,7 +80,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.UnitTests
                                     <StopPoint>
                                         <StopPointRef>de:14612:28</StopPointRef>
                                         <StopPointName>
-                                            <Text>Dresden, Hauptbahnhof</Text>
+                                            <Text>Hauptbahnhof</Text>
                                             <Language>de</Language>
                                         </StopPointName>
                                         <LocalityRef>14612000:1</LocalityRef>
