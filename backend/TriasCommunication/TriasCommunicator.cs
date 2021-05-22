@@ -52,11 +52,13 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             }
 
             var stopPoint = (StopPointStructure)locationResult.Location.Item;
+            var stopPointName = stopPoint.StopPointName.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
+            var locationName = locationResult.Location.LocationName.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
 
             return new LocationInformationStopResponse
             {
                 IdStopPoint = stopPoint.StopPointRef.Value,
-                StopPointName = stopPoint.StopPointName.FirstOrDefault(x => x.Language == "de")?.Text ?? "???",
+                StopPointName = $"{locationName}, {stopPointName}",
                 Latitude = locationResult.Location.GeoPosition.Latitude,
                 Longitude = locationResult.Location.GeoPosition.Longitude
             };
