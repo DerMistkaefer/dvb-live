@@ -126,10 +126,10 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Data
             JourneyRef = stopEvent.Service.JourneyRef.Value;
             var serviceSection = stopEvent.Service.ServiceSection.First();
             LineRef = serviceSection.LineRef.Value;
-            ModeName = serviceSection.Mode.Name?.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
-            LineName = serviceSection.PublishedLineName?.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
+            ModeName = serviceSection.Mode.Name.GetBestText();
+            LineName = serviceSection.PublishedLineName.GetBestText();
             OperatorRef = serviceSection.OperatorRef.Value;
-            RouteDescription = serviceSection.RouteDescription?.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
+            RouteDescription = serviceSection.RouteDescription.GetBestText();
             OriginStopPointRef = stopEvent.Service.OriginStopPointRef.Value;
             DestinationStopPointRef = stopEvent.Service.DestinationStopPointRef.Value;
         }
@@ -205,8 +205,8 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Data
             var callStop = call.CallAtStop;
             StopPointRef = callStop.StopPointRef.Value;
             StopSeqNumber = Convert.ToInt32(callStop.StopSeqNumber, CultureInfo.CurrentCulture);
-            StopPointName = callStop.StopPointName?.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
-            PlannedBay = callStop.PlannedBay?.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
+            StopPointName = callStop.StopPointName.GetBestText();
+            PlannedBay = callStop.PlannedBay.GetBestText();
             ArrivalTimeTableTime = DateTimeIsDefaultThenNull(callStop.ServiceArrival?.TimetabledTime);
             ArrivalEstimatedTime = DateTimeIsDefaultThenNull(callStop.ServiceArrival?.EstimatedTime);
             DepartureTimeTableTime = DateTimeIsDefaultThenNull(callStop.ServiceDeparture?.TimetabledTime);
