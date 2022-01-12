@@ -32,7 +32,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.IntegrationTests
             var shouldResponse = new LocationInformationStopResponse
             {
                 IdStopPoint = "de:14612:28",
-                StopPointName = "Dresden, Hauptbahnhof",
+                StopPointName = "Dresden, Dresden Hauptbahnhof",
                 Longitude = 13.73293M,
                 Latitude = 51.03993M
             };
