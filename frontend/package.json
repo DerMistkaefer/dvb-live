@@ -11,7 +11,7 @@
     "@types/node": "^15.6.0",
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.8",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "linq-to-typescript": "^8.0.0",
     "mapbox-gl": "^2.2.0",
     "react": "^17.0.2",
