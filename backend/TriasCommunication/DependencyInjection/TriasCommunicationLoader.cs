@@ -1,14 +1,11 @@
 ﻿using DerMistkaefer.DvbLive.TriasCommunication.Configuration;
-using DerMistkaefer.DvbLive.TriasCommunication.HostedServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http;
-using Microsoft.Extensions.Options;
 using System;
-using System.Net;
-using System.Net.Http;
 using DerMistkaefer.DvbLive.IPGeolocation.DependencyInjection;
+using DerMistkaefer.DvbLive.ProxyHttp.FreeProxySharp;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication.DependencyInjection
 {
@@ -31,28 +28,12 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.DependencyInjection
             }
             services.Configure<TriasConfiguration>(configuration.GetSection("TriasCommunication"));
             services.AddHttpClient();
-            services.AddHttpClient(TriasConfiguration.HttpClientFactoryClientName)
-                .ConfigurePrimaryHttpMessageHandler(BuildProxyHttpMessageHandler);
+            services.AddProxyHttpFreeProxySharp();
             services.AddSingleton<ITriasHttpClient, TriasHttpClient>();
             services.AddSingleton<ITriasCommunicator, TriasCommunicator>();
-            services.AddHostedService<TorSharpProxyHostedService>();
             // Disable Logging for HttpClient.
             services.RemoveAll<IHttpMessageHandlerBuilderFilter>();
             services.AddIpGeolocation(configuration);
-        }
-
-        private static HttpClientHandler BuildProxyHttpMessageHandler(IServiceProvider serviceProvider)
-        {
-            var config = serviceProvider.GetService<IOptions<TriasConfiguration>>();
-            if (config is null)
-            {
-                throw new NullReferenceException($"The Configuration '{nameof(TriasConfiguration)}' could not be found.");
-            }
-
-            return new HttpClientHandler
-            {
-                Proxy = new WebProxy(new Uri($"http://localhost:{config.Value.TorSharpSettings.PrivoxySettings.Port}"))
-            };
         }
     }
 }

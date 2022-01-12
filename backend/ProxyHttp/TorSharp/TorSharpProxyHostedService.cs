@@ -1,16 +1,15 @@
-﻿using DerMistkaefer.DvbLive.TriasCommunication.Configuration;
-using Knapcode.TorSharp;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using DerMistkaefer.DvbLive.IPGeolocation;
+using Knapcode.TorSharp;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-namespace DerMistkaefer.DvbLive.TriasCommunication.HostedServices
+namespace DerMistkaefer.DvbLive.ProxyHttp.TorSharp
 {
     /// <summary>
     /// Hosted Service to manage the TorSharpProxy.
@@ -18,7 +17,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.HostedServices
     /// </summary>
     internal class TorSharpProxyHostedService : IHostedService, IDisposable
     {
-        private readonly IOptions<TriasConfiguration> _triasConfiguration;
+        private readonly IOptions<TorSharpSettings> _triasConfiguration;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IIpGeolocation _ipGeolocation;
         private readonly ILogger<TorSharpProxyHostedService> _logger;
@@ -27,21 +26,21 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.HostedServices
         private Timer? _timer;
 
         public TorSharpProxyHostedService(
-            IOptions<TriasConfiguration> triasConfiguration,
+            IOptions<TorSharpSettings> torSharpConfiguration,
             IHttpClientFactory httpClientFactory,
             IIpGeolocation ipGeolocation,
             ILogger<TorSharpProxyHostedService> logger
             )
         {
-            _triasConfiguration = triasConfiguration;
+            _triasConfiguration = torSharpConfiguration;
             _httpClientFactory = httpClientFactory;
             _ipGeolocation = ipGeolocation;
             _logger = logger;
-            var config = triasConfiguration.Value;
-            _proxy = new TorSharpProxy(config.TorSharpSettings);
+            var config = torSharpConfiguration.Value;
+            _proxy = new TorSharpProxy(config);
             var proxyHttpClientHandler = new HttpClientHandler
             {
-                Proxy = new WebProxy(new Uri($"http://localhost:{config.TorSharpSettings.PrivoxySettings.Port}"))
+                Proxy = new WebProxy(new Uri($"http://localhost:{config.PrivoxySettings.Port}"))
             };
             _proxyHttpClient = new HttpClient(proxyHttpClientHandler);
         }
@@ -49,7 +48,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.HostedServices
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             using var httpClient = _httpClientFactory.CreateClient();
-            await new TorSharpToolFetcher(_triasConfiguration.Value.TorSharpSettings, httpClient).FetchAsync().ConfigureAwait(false);
+            await new TorSharpToolFetcher(_triasConfiguration.Value, httpClient).FetchAsync().ConfigureAwait(false);
 
             await _proxy.ConfigureAndStartAsync().ConfigureAwait(false);
             await CheckIdentity().ConfigureAwait(false);
@@ -83,7 +82,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.HostedServices
         private async Task CheckIdentity()
         {
             var ipResponse = await _ipGeolocation.GeolocateOwnAddress(_proxyHttpClient).ConfigureAwait(false);
-            _logger.LogInformation($"New TriasCommincation IP - {ipResponse}");
+            _logger.LogInformation("New ProxyHttp IP - {IPAddress}", ipResponse);
         }
     }
 }

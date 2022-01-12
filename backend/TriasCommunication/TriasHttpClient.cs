@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using DerMistkaefer.DvbLive.ProxyHttp.FreeProxySharp;
 using vdo.trias;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication
@@ -27,7 +28,7 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
         /// <inheritdoc cref="ITriasHttpClient"/>
         public event EventHandler<RequestFinishedEventArgs>? RequestFinished;
 
-        public TriasHttpClient(IHttpClientFactory httpClientFactory, IOptions<TriasConfiguration> triasConfiguration, ILogger<TriasHttpClient> logger)
+        public TriasHttpClient(HttpProxyFactory httpClientFactory, IOptions<TriasConfiguration> triasConfiguration, ILogger<TriasHttpClient> logger)
         {
             _logger = logger;
             _httpClient = httpClientFactory.CreateClient(TriasConfiguration.HttpClientFactoryClientName);

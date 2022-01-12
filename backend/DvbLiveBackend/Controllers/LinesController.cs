@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Net.Mime;
-using DerMistkaefer.DvbLive.Backend.ApiStructure.Output;
-using DerMistkaefer.DvbLive.Backend.ApiStructure.OutputBuilder;
 using DerMistkaefer.DvbLive.Backend.Cache.Api;
 using DerMistkaefer.DvbLive.GetPublicTransportLines.Data;
 using Microsoft.AspNetCore.Http;

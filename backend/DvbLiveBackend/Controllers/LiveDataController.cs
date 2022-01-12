@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net.Mime;
-using System.Threading.Tasks;
 using DerMistkaefer.DvbLive.Backend.ApiStructure.Output;
 using DerMistkaefer.DvbLive.Backend.ApiStructure.OutputBuilder;
 using DerMistkaefer.DvbLive.Backend.Cache.Api;
-using DerMistkaefer.DvbLive.Backend.Cache.Data;
-using GeoJSON.Net.Geometry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

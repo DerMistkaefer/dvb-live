@@ -1,5 +1,4 @@
-﻿using Knapcode.TorSharp;
-using System;
+﻿using System;
 
 namespace DerMistkaefer.DvbLive.TriasCommunication.Configuration
 {
@@ -14,11 +13,6 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Configuration
         public Uri TriasUrl { get; set; }
 
         /// <summary>
-        /// Tort Sharp Settings for the Trias Communication.
-        /// </summary>
-        internal TorSharpSettings TorSharpSettings { get; }
-
-        /// <summary>
         /// Name of the HttpCLient from the HttpClient Factory that TriasCommunicattion will be used.
         /// </summary>
         internal static string HttpClientFactoryClientName => "TriasCommunication.HttpClient";
@@ -29,7 +23,6 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Configuration
         public TriasConfiguration()
         {
             TriasUrl = null!;
-            TorSharpSettings = DefaultTorSharpSettings;
         }
 
         /// <summary>
@@ -39,19 +32,6 @@ namespace DerMistkaefer.DvbLive.TriasCommunication.Configuration
         public TriasConfiguration(Uri triasUrl)
         {
             TriasUrl = triasUrl;
-            TorSharpSettings = DefaultTorSharpSettings;
         }
-
-        private static TorSharpSettings DefaultTorSharpSettings => new TorSharpSettings
-        {
-            PrivoxySettings = new TorSharpPrivoxySettings
-            {
-                MaxClientConnections = 20000
-            },
-            TorSettings = new TorSharpTorSettings
-            {
-                ControlPassword = $"{HttpClientFactoryClientName}{DateTime.Now}"
-            }
-        };
     }
 }
