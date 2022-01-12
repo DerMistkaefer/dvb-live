@@ -4,7 +4,7 @@ import './App.css';
 import Map from '../Map/Map';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { persistQueryClient } from 'react-query/persistQueryClient-experimental'
-import { createLocalStoragePersistor } from 'react-query/createLocalStoragePersistor-experimental';
+import { createWebStoragePersistor } from 'react-query/createWebStoragePersistor-experimental';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
 // BEGIN React Query Setup
@@ -15,11 +15,11 @@ const queryClient = new QueryClient({
         }
     }
 });
-const localStoragePersistor = createLocalStoragePersistor()
+const webStoragePersistor = createWebStoragePersistor({ storage: window.localStorage })
 
 persistQueryClient({
     queryClient,
-    persistor: localStoragePersistor,
+    persistor: webStoragePersistor,
 });
 // END React Query Setup
 
