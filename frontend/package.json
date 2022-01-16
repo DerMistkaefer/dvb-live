@@ -32,7 +32,7 @@
     "jest-webgl-canvas-mock": "^0.2.3",
     "jsdom-worker": "^0.2.1",
     "mitt": "^3.0.0",
-    "node-fetch": "^2.6.6",
+    "node-fetch": "^2.6.7",
     "react-test-renderer": "^17.0.2",
     "uuid-v4": "^0.1.0"
   },
