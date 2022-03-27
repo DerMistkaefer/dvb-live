@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>Enable</Nullable>
+    <Nullable>enable</Nullable>
     <RootNamespace>DerMistkaefer.DvbLive.TriasCommunication</RootNamespace>
     <AssemblyName>DerMistkaefer.DvbLive.TriasCommunication</AssemblyName>
     <Authors>DerMistkaefer</Authors>

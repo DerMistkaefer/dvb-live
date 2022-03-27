@@ -2,7 +2,7 @@
     
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <Nullable>Enable</Nullable>
+        <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <RootNamespace>DerMistkaefer.DvbLive.Backend.UnitTests</RootNamespace>
         <AssemblyName>DerMistkaefer.DvbLive.Backend.UnitTests</AssemblyName>

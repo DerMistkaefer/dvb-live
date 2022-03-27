@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Nullable>Enable</Nullable>
+    <Nullable>enable</Nullable>
     <RootNamespace>DerMistkaefer.DvbLive.IPGeolocation</RootNamespace>
     <AssemblyName>DerMistkaefer.DvbLive.IPGeolocation</AssemblyName>
     <Authors>DerMistkaefer</Authors>
