@@ -45,19 +45,36 @@ namespace DerMistkaefer.DvbLive.TriasCommunication
             var response = await _triasHttpClient.BaseTriasCall<LocationInformationResponseStructure>(locationInformationRequest).ConfigureAwait(false);
 
             var locationResult = response.LocationResult?.FirstOrDefault();
-            if (response.LocationResult?.Length != 1 || locationResult == null || ((StopPointStructure)locationResult.Location.Item).StopPointRef.Value != idStopPoint)
+            if (locationResult == null)
             {
                 var errorCodes = response.ErrorMessage?.SelectMany(x => x.Text).Select(x => x.Text) ?? new List<string>();
                 throw new LocationInformationException($"No location could be found. {string.Join('-', errorCodes)}");
             }
+            
+            string? idStopPointResult = null;
+            var stopPointName = "???";
+            switch (locationResult.Location.Item)
+            {
+                case StopPointStructure stopPoint:
+                    idStopPointResult = stopPoint.StopPointRef.Value;
+                    stopPointName = stopPoint.StopPointName.GetBestText();
+                    break;
+                case StopPlaceStructure stopPlace:
+                    idStopPointResult = stopPlace.StopPlaceRef.Value;
+                    stopPointName = stopPlace.StopPlaceName.GetBestText();
+                    break;
+            }
 
-            var stopPoint = (StopPointStructure)locationResult.Location.Item;
-            var stopPointName = stopPoint.StopPointName.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
-            var locationName = locationResult.Location.LocationName.FirstOrDefault(x => x.Language == "de")?.Text ?? "???";
+            if (idStopPointResult != idStopPoint)
+            {
+                throw new LocationInformationException($"Invalid location found. Requested: {idStopPoint} - Response: {idStopPointResult}");
+            }
+
+            var locationName = locationResult.Location.LocationName.GetBestText();
 
             return new LocationInformationStopResponse
             {
-                IdStopPoint = stopPoint.StopPointRef.Value,
+                IdStopPoint = idStopPointResult,
                 StopPointName = $"{locationName}, {stopPointName}",
                 Latitude = locationResult.Location.GeoPosition.Latitude,
                 Longitude = locationResult.Location.GeoPosition.Longitude
