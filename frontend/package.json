@@ -14,8 +14,8 @@
     "axios": "^0.26.1",
     "linq-to-typescript": "^10.0.0",
     "mapbox-gl": "^2.6.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-mapbox-gl": "^5.1.1",
     "react-query": "^3.34.19",
     "react-scripts": "^4.0.3",
@@ -33,7 +33,7 @@
     "jsdom-worker": "^0.2.1",
     "mitt": "^3.0.0",
     "node-fetch": "^2.6.7",
-    "react-test-renderer": "^17.0.2",
+    "react-test-renderer": "^18.2.0",
     "uuid-v4": "^0.1.0"
   },
   "scripts": {
