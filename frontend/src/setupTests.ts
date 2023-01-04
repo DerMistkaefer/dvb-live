@@ -5,7 +5,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import 'jest-performance';
 import 'jest-webgl-canvas-mock';
-import './test-utils/jsdom-worker';
+import 'jsdom-worker';
 
 // @ts-ignore
 global.Worker.terminate = jest.fn();

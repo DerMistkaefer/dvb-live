@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [16.x, 18.x]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3.0.0
+      uses: actions/setup-node@v3.3.0
       with:
         node-version: ${{ matrix.node-version }}
     - name: Install dependencies
@@ -25,12 +25,12 @@ jobs:
     - name: Build
       run: npm run build --prefix frontend
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}  
     - name: Deploy - Github Pages
       if: github.event_name == 'push'
-      uses: crazy-max/ghaction-github-pages@v2.6.0
+      uses: crazy-max/ghaction-github-pages@v2.7.0
       with:
         target_branch: gh-pages
         build_dir: frontend/build

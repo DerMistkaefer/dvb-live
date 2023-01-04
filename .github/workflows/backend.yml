@@ -16,9 +16,9 @@ jobs:
       with:
         apt-get: privoxy libbrotli-dev libmbedtls-dev
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v2.0.0
+      uses: actions/setup-dotnet@v2.1.0
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '7.0.x'
     - name: Install dependencies
       run: dotnet restore "backend/DvbLive.sln"
     - name: Build
@@ -31,9 +31,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v2.0.0
+      uses: actions/setup-dotnet@v2.1.0
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '7.0.x'
     - name: Install dependencies
       run: dotnet restore "backend/DvbLive.sln"
     - name: Build
