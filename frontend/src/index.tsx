@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import * as Sentry from "@sentry/react";
 import './index.css';
 import App from './components/App/App';
@@ -12,13 +12,14 @@ Sentry.init({
     enabled: process.env.NODE_ENV === 'production',
 });
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container!);
+root.render(
   <React.StrictMode>
       <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>} showDialog>
           <App />
       </Sentry.ErrorBoundary>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change

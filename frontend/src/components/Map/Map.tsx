@@ -1,12 +1,9 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import ReactMapboxGl, {
-    Feature, GeoJSONLayer,
     Layer,
     Popup,
-    RotationControl,
-    ScaleControl,
-    ZoomControl
-} from 'react-mapbox-gl';
+    ScaleControl, Source,
+} from 'react-map-gl';
 import mapboxgl, {FlyToOptions} from "mapbox-gl";
 import 'mapbox-gl/dist/mapbox-gl.css';
 import {useQuery} from 'react-query';
@@ -15,6 +12,7 @@ import PositionControl from './PositionControl';
 import './Map.css';
 import {from} from "linq-to-typescript";
 import VehiclePositionDisplay from "./VehiclePositionDisplay";
+import {Feature} from "geojson";
 
 // Webpack production build destroys the worker class. So load separately.
 if (process.env.NODE_ENV === 'production') {
@@ -24,9 +22,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGVybWlzdGthZWZlciIsImEiOiJja2swYWQ0NHAwZm16Mm9rMmE3M3k2Zjk3In0.p8sQOMjTL_muHCN36uY9iA';
-const Mapbox = ReactMapboxGl({
-    accessToken: 'pk.eyJ1IjoiZGVybWlzdGthZWZlciIsImEiOiJja2swYWQ0NHAwZm16Mm9rMmE3M3k2Zjk3In0.p8sQOMjTL_muHCN36uY9iA'
-});
+const Mapbox = ReactMapboxGl;
 
 const StyledPopup: React.CSSProperties = {
     color: "#3f618c",
@@ -66,44 +62,82 @@ const Map = () => {
 
     const stopPoints = useQuery<StopPoint[], Error>('stopPoints', getAllStopPoints);
     const lines = useQuery<PublicTransportLine[], Error>('publicTransportLines', getAllPublicTransportLines);
-    let linesFeatureCollection: GeoJSON.FeatureCollection<GeoJSON.MultiLineString> | null = null;
-    if (lines.data != null)
-    {
-        linesFeatureCollection = {
-            type: "FeatureCollection",
-            features: from(lines.data).select(x => x.line).toArray()
-        };
-    }
+    let linesFeatureCollection: GeoJSON.FeatureCollection<GeoJSON.Geometry> | undefined = useMemo(() => {
+        if (lines.data != null)
+        {
+            return {
+                type: "FeatureCollection",
+                features: from(lines.data).select(x => x.line).toArray()
+            };
+        }
+        return undefined;
+    }, [lines]);
+    let stopPointsCollection: GeoJSON.FeatureCollection<GeoJSON.Geometry> | undefined = useMemo(() => {
+        if (stopPoints.data != null)
+        {
+            return {
+                type: "FeatureCollection",
+                features: from(stopPoints.data).select((x: StopPoint) =>
+                    ({
+                        id: x.idStopPoint,
+                        type: "Feature",
+                        properties: {
+                            network: "bus",
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: [x.longitude, x.latitude]
+                        }
+                    } as Feature<GeoJSON.Point>))
+                    .toArray()
+            };
+        }
+        return undefined;
+
+    }, [stopPoints]);
 
     return (
-        <Mapbox className='map-container'
-                /* eslint-disable-next-line react/style-prop-object */
-                style='mapbox://styles/mapbox/streets-v11'
-                center={[lng, lat]}
-                zoom={[zoom]}
-                onDrag={onDrag}
-                onStyleLoad={(map) => {
-                    setMapboxMap(map);
+        <Mapbox id='map-container'
+                mapStyle='mapbox://styles/mapbox/streets-v11'
+                initialViewState={{
+                    longitude: lng,
+                    latitude: lat,
+                    zoom: zoom
                 }}
-                flyToOptions={flyToOptions}
+                zoom={zoom}
+                onDrag={onDrag}
+                onLoad={(event) => {
+                    setMapboxMap(event.target);
+                }}
+                mapboxAccessToken={mapboxgl.accessToken}
+                // flyToOptions={flyToOptions}
         >
             {/* Controls */}
             <PositionControl />
-            <ZoomControl/>
-            <RotationControl/>
+            {/*<ZoomControl/>
+            <RotationControl/>*/}
             <ScaleControl style={{marginBottom: "15px"}}/>
             {/* Lines */}
-            <GeoJSONLayer data={linesFeatureCollection}
-                          lineLayout={{
-                              "visibility": "visible"
-                          }}
-                          linePaint={{
-                              "line-width": 3,
-                              "line-color": "#00f8ff"
-                          }}
-            />
+            <Source type="geojson" data={linesFeatureCollection}>
+                <Layer type="line"
+                       layout={{
+                           visibility: "visible"
+                       }}
+                       paint={{
+                           "line-width": 3,
+                           "line-color": "#00f8ff"
+                       }}
+               />
+            </Source>
             {/* StopPoints */}
-            <Layer type="symbol" layout={{ "icon-image": ["get", "network"] }}>
+            <Source type="geojson" data={stopPointsCollection}>
+                <Layer type="symbol"
+                       layout={{
+                           "icon-image": ["get", "network"],
+                       }}
+                />
+            </Source>
+            {/*<Layer type="symbol" layout={{ "icon-image": ["get", "network"] }}>
                 {stopPoints.data != null && stopPoints.data.map(stopPoint =>
                     <Feature key={stopPoint.idStopPoint}
                              onClick={markerClick.bind(this, stopPoint)}
@@ -113,10 +147,11 @@ const Map = () => {
                              properties={{network: "bus"}}
                              />
                 )}
-            </Layer>
+            </Layer>*/}
             {selectedStopPoint && (
                 <Popup key={selectedStopPoint.idStopPoint}
-                       coordinates={[selectedStopPoint.longitude, selectedStopPoint.latitude]}
+                       longitude={selectedStopPoint.longitude}
+                       latitude={selectedStopPoint.latitude}
                        style={StyledPopup}
                 >
                     {selectedStopPoint.stopPointName}

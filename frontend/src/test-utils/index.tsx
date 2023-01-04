@@ -3,7 +3,7 @@ import {render, RenderOptions} from '@testing-library/react'
 import {QueryClient, QueryClientProvider} from "react-query";
 
 const queryClient = new QueryClient();
-const AllTheProviders: React.ComponentType = ({ children }) => (
+const AllTheProviders: React.ComponentType<{children: React.ReactElement}> = ({ children }) => (
     <QueryClientProvider client={queryClient}>
         {children}
     </QueryClientProvider>
